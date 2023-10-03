@@ -1,3 +1,4 @@
+import { withSessionSsr } from '@/lib/auth/witSession';
 import {
   Box,
   Button,
@@ -8,17 +9,58 @@ import {
   Input,
   Stack,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import Head from 'next/head';
-import router from 'next/router';
-import { useState } from 'react';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
-export default function Login() {
+export interface LoginProps {
+  user: any;
+}
+
+export const getServerSideProps = withSessionSsr(
+  async ({ req, res }: { req: any; res: any }) => {
+    const user = req.session.user;
+
+    if (!user) {
+      return {
+        props: { user: null },
+      };
+    }
+
+    return {
+      props: { user },
+    };
+  }
+);
+
+export default function Login({ user }: LoginProps) {
+  // - Esta pagina sera donde los empleados iniciaran sesion
+  // ----------- HOOKS ----------- //
+  const toast = useToast();
+  const router = useRouter();
+
   // ----------- USESTATE DECLARATIONS ----------- //
   const [mail, setMail] = useState('');
   const [password, setPassword] = useState('');
 
+  // ----------- INICIAR SESION ----------- //
   const handleSubmit = async () => {
+    // - Verificar que los campos no esten vacios
+    if (mail === '' || password === '') {
+      toast({
+        title: 'Error',
+        description: 'Por favor, complete todos los campos',
+        variant: 'left-accent',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
     const response = await fetch('/api/sessions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -26,11 +68,34 @@ export default function Login() {
     });
 
     if (response.ok) {
+      // - Si el usuario es valido, redirigirlo a la pagina del sistema
       return router.push('/system');
     } else {
-      alert('Usuario o contraseña incorrectos');
+      // - Si el usuario no es valido, mostrar un mensaje de error
+      toast({
+        title: 'Error al iniciar sesion',
+        description: 'Correo o contraseña incorrectos',
+        variant: 'left-accent',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      setPassword('');
     }
   };
+
+  useEffect(() => {
+    // - If the user is not logged in, redirect to /login
+    if (user) {
+      router.push('/system');
+    }
+  }, []);
+
+  // - If the user is logged in, redirect to /system
+  if (user) {
+    return <div>Redirecting...</div>;
+  }
 
   return (
     <>
@@ -82,6 +147,11 @@ export default function Login() {
                     value={password}
                     onChange={(e) => {
                       setPassword(e.target.value);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSubmit();
+                      }
                     }}
                   />
                 </FormControl>
