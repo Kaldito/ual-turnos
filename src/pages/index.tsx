@@ -12,16 +12,6 @@ export default function Home() {
       </Head>
 
       <main>
-        <Button as={'a'}>Iniciar Sesion</Button>
-
-        <Button
-          onClick={async () => {
-            await fetch('/api/testConnection');
-          }}
-        >
-          Test
-        </Button>
-
         <Button>Sacar Turno</Button>
       </main>
     </>

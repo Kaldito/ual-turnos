@@ -13,13 +13,16 @@
     "@chakra-ui/react": "^2.8.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "bcrypt": "^5.1.1",
     "framer-motion": "^10.16.4",
+    "iron-session": "^6.3.1",
     "mongoose": "^7.5.3",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
