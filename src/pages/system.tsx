@@ -1,4 +1,4 @@
-import LogoutButton from '@/components/buttons/logoutButton';
+import NavBar from '@/components/layout/navbar';
 import { withSessionSsr } from '@/lib/auth/witSession';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -51,10 +51,10 @@ export default function SystemHome({ user }: SystemHomeProps) {
       </Head>
 
       <main>
+        <NavBar rol={user.rol} name={user.username} />
+
         <h1>Hello {user.username}</h1>
         <p>Secret Content</p>
-
-        <LogoutButton />
       </main>
     </>
   );
