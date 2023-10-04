@@ -46,23 +46,20 @@ export default function NavBar({ rol, name }: NavBarProps) {
 
   const number = name.trim().split(' ').length;
 
-  const username = number > 1 ? name : `${name} ?`;
+  const username = number > 1 ? name : `${name} ${name}`;
 
   const adminSections = [
     {
       label: 'Departamentos',
-      children: [
-        {
-          label: 'Crear Departamento',
-          subLabel: 'Creador de Departamentos',
-          href: '#',
-        },
-        {
-          label: 'Listado de Departamentos',
-          subLabel: 'Gestiona, edita y elimina departamentos',
-          href: '#',
-        },
-      ],
+      href: '#',
+    },
+    {
+      label: 'Puntos de Servicio',
+      href: '#',
+    },
+    {
+      label: 'Usuarios',
+      href: '/system/admin/users',
     },
   ];
 
@@ -99,13 +96,20 @@ export default function NavBar({ rol, name }: NavBarProps) {
 
         {/* // - CONTENT - // */}
         <Flex flex={{ base: 1 }} justify={{ base: 'center', md: 'start' }}>
-          <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
-            fontFamily={'heading'}
-            color={useColorModeValue('gray.800', 'white')}
+          <Box
+            onClick={() => {
+              router.push('/system');
+            }}
+            style={{ cursor: 'pointer', paddingTop: '0.3rem' }}
           >
-            UAL Turnos
-          </Text>
+            <Text
+              textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+              fontFamily={'heading'}
+              color={useColorModeValue('gray.800', 'white')}
+            >
+              UAL Turnos
+            </Text>
+          </Box>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
             <DesktopNav NAV_ITEMS={NAV_ITEMS} />
@@ -132,7 +136,9 @@ export default function NavBar({ rol, name }: NavBarProps) {
 
             <MenuList>
               <MenuItem>Perfil</MenuItem>
+
               <MenuDivider />
+
               <MenuItem
                 onClick={async () => {
                   await fetch('/api/logout');
@@ -155,8 +161,10 @@ export default function NavBar({ rol, name }: NavBarProps) {
 }
 
 const DesktopNav = ({ NAV_ITEMS }: { NAV_ITEMS: Array<NavItem> }) => {
+  const router = useRouter();
+
   const linkColor = useColorModeValue('gray.600', 'gray.200');
-  const linkHoverColor = useColorModeValue('gray.800', 'white');
+  const linkHoverColor = useColorModeValue('green.600', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
 
   return (
@@ -166,15 +174,17 @@ const DesktopNav = ({ NAV_ITEMS }: { NAV_ITEMS: Array<NavItem> }) => {
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
               <Box
-                as="a"
                 p={2}
-                href={navItem.href ?? '#'}
                 fontSize={'sm'}
                 fontWeight={500}
                 color={linkColor}
+                style={{ cursor: 'pointer' }}
                 _hover={{
                   textDecoration: 'none',
                   color: linkHoverColor,
+                }}
+                onClick={async () => {
+                  router.push(navItem.href ?? '#');
                 }}
               >
                 {navItem.label}

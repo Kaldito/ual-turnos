@@ -1,10 +1,14 @@
+import NewUserCard from '@/components/cards/newUserCard';
 import NavBar from '@/components/layout/navbar';
+import LoaderSpinner from '@/components/loaderSpinner';
 import { withSessionSsr } from '@/lib/auth/witSession';
+import useHasMounted from '@/lib/hasMounted';
+import { Box, Grid, GridItem } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
-export interface SystemHomeProps {
+export interface UsersPageProps {
   user: any;
 }
 
@@ -24,19 +28,20 @@ export const getServerSideProps = withSessionSsr(
   }
 );
 
-export default function SystemHome({ user }: SystemHomeProps) {
+export default function UsersPage({ user }: UsersPageProps) {
   // - Esta es la pagina de inicio del sistema para empleados
   const router = useRouter();
+  const hasMounted = useHasMounted();
 
   useEffect(() => {
     // - If the user is not logged in, redirect to /login
-    if (!user) {
+    if (!user || user.rol !== 'admin') {
       router.push('/login');
     }
   });
 
   // - If the user is not logged in, redirect to /login
-  if (!user) {
+  if (!user || user.rol !== 'admin') {
     return <div>Redirecting...</div>;
   }
 
@@ -53,8 +58,19 @@ export default function SystemHome({ user }: SystemHomeProps) {
       <main>
         <NavBar rol={user.rol} name={user.username} />
 
-        <h1>Hello {user.username}</h1>
-        <p>Aqui ira el dashboard</p>
+        <Box px={3} py={4}>
+          <h1>Gestion de usuarios</h1>
+
+          <Grid templateColumns="repeat(4, 1fr)" gap={0}>
+            <GridItem>
+              {hasMounted ? (
+                <NewUserCard />
+              ) : (
+                <LoaderSpinner paddingY="12rem" size="xl" />
+              )}
+            </GridItem>
+          </Grid>
+        </Box>
       </main>
     </>
   );

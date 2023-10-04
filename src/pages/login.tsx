@@ -45,6 +45,10 @@ export default function Login({ user }: LoginProps) {
   const [mail, setMail] = useState('');
   const [password, setPassword] = useState('');
 
+  // ----------- COLORS ----------- //
+  const bg1 = useColorModeValue('gray.50', 'gray.800');
+  const bg2 = useColorModeValue('white', 'gray.700');
+
   // ----------- INICIAR SESION ----------- //
   const handleSubmit = async () => {
     // - Verificar que los campos no esten vacios
@@ -90,7 +94,7 @@ export default function Login({ user }: LoginProps) {
     if (user) {
       router.push('/system');
     }
-  }, []);
+  });
 
   // - If the user is logged in, redirect to /system
   if (user) {
@@ -109,12 +113,7 @@ export default function Login({ user }: LoginProps) {
 
       {/* // ----------- MAIN ----------- // */}
       <main>
-        <Flex
-          minH={'100vh'}
-          align={'center'}
-          justify={'center'}
-          bg={useColorModeValue('gray.50', 'gray.800')}
-        >
+        <Flex minH={'100vh'} align={'center'} justify={'center'} bg={bg1}>
           <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
             <Stack align={'center'}>
               <Heading fontSize={'3xl'}>
@@ -122,12 +121,7 @@ export default function Login({ user }: LoginProps) {
               </Heading>
             </Stack>
 
-            <Box
-              rounded={'lg'}
-              bg={useColorModeValue('white', 'gray.700')}
-              boxShadow={'lg'}
-              p={8}
-            >
+            <Box rounded={'lg'} bg={bg2} boxShadow={'lg'} p={8}>
               <Stack spacing={4}>
                 <FormControl id="email">
                   <FormLabel>Correo electronico:</FormLabel>
