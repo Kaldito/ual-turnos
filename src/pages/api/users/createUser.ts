@@ -3,6 +3,14 @@ import User from '@/models/mongoSchemas/userSchema';
 import bcrypt from 'bcrypt';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+// - Para usar este endpoint, se debe hacer una petición POST con los siguientes datos:
+// {
+//   username: 'Nombre de usuario',
+//   mail: 'correo@electronico',
+//   password: 'contraseña',
+//   rol: 'admin'
+// }
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -12,6 +20,7 @@ export default async function handler(
 
     const { username, email, password, rol } = req.body;
 
+    // - Validando que no se haya registrado el mismo correo o contraseña
     const validateMail = await User.findOne({ correo: email });
     const validateUsername = await User.findOne({ username: username });
 
@@ -21,6 +30,7 @@ export default async function handler(
         .json({ message: 'El nombre de usuario o correo ya existen.' });
     }
 
+    // - Encriptar la contraseña
     bcrypt.hash(password, 10, async function (err, hash) {
       const user = new User({
         username: username,

@@ -15,8 +15,13 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { AiFillEye, AiFillEyeInvisible, AiOutlinePlus } from 'react-icons/ai';
+import { CgDanger } from 'react-icons/cg';
 
-export default function NewUserCard() {
+export interface NewUserCardProps {
+  userRol: string;
+}
+
+export default function NewUserCard({ userRol }: NewUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
 
@@ -135,6 +140,13 @@ export default function NewUserCard() {
       });
   };
 
+  // ------- ADMIN HANDLER ------- //
+  useEffect(() => {
+    if (rol == 'admin') {
+      setServicePoint('');
+    }
+  }, [rol]);
+
   // ------- VERIFICAR EMAIL VALIDO ------- //
   useEffect(() => {
     if (email == '') {
@@ -185,19 +197,35 @@ export default function NewUserCard() {
             placeholder="Nombre de usuario"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            autoComplete="off"
           />
         </FormControl>
 
         {/* // - CORREO - // */}
         <FormControl mt={3}>
-          <Input
-            type="text"
-            size={'sm'}
-            placeholder="Correo"
-            value={email}
-            isInvalid={!isValidEmail}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <InputGroup>
+            <Input
+              type="text"
+              size={'sm'}
+              placeholder="Correo"
+              value={email}
+              isInvalid={!isValidEmail}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="off"
+            />
+
+            <InputRightElement pb={2}>
+              <Box color={'red.400'}>
+                {isValidEmail ? (
+                  <></>
+                ) : (
+                  <>
+                    <CgDanger />
+                  </>
+                )}
+              </Box>
+            </InputRightElement>
+          </InputGroup>
         </FormControl>
 
         {/* // - CONTRASEÑA - // */}
@@ -235,44 +263,51 @@ export default function NewUserCard() {
         {/* // - ROL - // */}
         <FormControl mt={3}>
           <Select
+            title="Selecciona tu Rol..."
             size="sm"
             value={rol}
             onChange={(e) => setRol(e.target.value)}
           >
             <option value="">Selecciona un rol...</option>
-            <option value="admin">Administrador</option>
+            {userRol == 'superadmin' ? (
+              <option value="admin">Administrador</option>
+            ) : null}
             <option value="asesor">Asesor de Servicio</option>
           </Select>
         </FormControl>
 
         {/* // - PUNTO DE SERVICIO - // */}
-        <FormControl mt={3}>
-          <Select
-            size="sm"
-            value={servicePoint}
-            onChange={(e) => setServicePoint(e.target.value)}
-          >
-            <option value="">Punto de Servicio (opcional)</option>
-          </Select>
-        </FormControl>
+        {rol == 'admin' ? null : (
+          <>
+            <FormControl mt={3}>
+              <Select
+                size="sm"
+                value={servicePoint}
+                onChange={(e) => setServicePoint(e.target.value)}
+              >
+                <option value="">Punto de Servicio (opcional)</option>
+              </Select>
+            </FormControl>
+          </>
+        )}
 
         {/* // - BOTON DE AGREGAR - // */}
         <Stack mt={3} direction={'row'} spacing={4}>
           <Button
             flex={1}
             fontSize={'sm'}
-            rounded={'lg'}
-            bg={'green.400'}
-            color={'white'}
+            rounded={'xl'}
             onClick={createUser}
+            bg={'green.500'}
+            color={'white'}
             boxShadow={
               '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
             }
             _hover={{
-              bg: 'green.500',
+              bg: 'green.600',
             }}
             _focus={{
-              bg: 'green.500',
+              bg: 'green.600',
             }}
           >
             Agregar

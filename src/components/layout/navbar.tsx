@@ -63,7 +63,8 @@ export default function NavBar({ rol, name }: NavBarProps) {
     },
   ];
 
-  const NAV_ITEMS: Array<NavItem> = rol == 'admin' ? adminSections : [];
+  const NAV_ITEMS: Array<NavItem> =
+    rol == 'admin' || rol == 'superadmin' ? adminSections : [];
 
   return (
     <Box>
@@ -131,7 +132,7 @@ export default function NavBar({ rol, name }: NavBarProps) {
               cursor={'pointer'}
               minW={0}
             >
-              <Avatar size={'sm'} name={username} bg="green.500" />
+              <Avatar size={'sm'} name={username} bg="green.400" />
             </MenuButton>
 
             <MenuList>
