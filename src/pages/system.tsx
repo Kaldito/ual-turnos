@@ -50,7 +50,7 @@ export default function SystemHome({ user }: SystemHomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
+      <main className="bg-general">
         <NavBar rol={user.rol} name={user.username} />
 
         <h1>Hello {user.username}</h1>

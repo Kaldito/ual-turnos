@@ -1,5 +1,6 @@
 import MyUserCard from '@/components/cards/myUserCard';
 import NewUserCard from '@/components/cards/newUserCard';
+import UserCard from '@/components/cards/userCard';
 import NavBar from '@/components/layout/navbar';
 import LoaderSpinner from '@/components/loaderSpinner';
 import { withSessionSsr } from '@/lib/auth/witSession';
@@ -35,7 +36,8 @@ export default function UsersPage({ user }: UsersPageProps) {
   const hasMounted = useHasMounted();
 
   // ------- USESTATE DECLARATIONS ------- //
-  const [myUser, setMyUser] = useState(null);
+  const [myUser, setMyUser] = useState<any>(null);
+  const [users, setUsers] = useState<any>(null);
 
   // ------- OBTENER MI USUARIO ------- //
   const getMyUser = async () => {
@@ -54,6 +56,18 @@ export default function UsersPage({ user }: UsersPageProps) {
     });
   };
 
+  // ------- OBTENER USUARIOS ------- //
+  const getUsers = async () => {
+    await fetch(`/api/users/getUsers?user_id=${user._id}`).then(async (res) => {
+      if (res.status == 200) {
+        const data = await res.json();
+
+        setUsers(data.users_data);
+      }
+    });
+  };
+
+  // ------- USEEFFECTS ------- //
   useEffect(() => {
     getMyUser();
 
@@ -62,6 +76,12 @@ export default function UsersPage({ user }: UsersPageProps) {
       router.push('/login');
     }
   });
+
+  useEffect(() => {
+    if (myUser) {
+      getUsers();
+    }
+  }, [myUser]);
 
   // - If the user is not logged in, redirect to /login
   if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
@@ -103,6 +123,28 @@ export default function UsersPage({ user }: UsersPageProps) {
                 <LoaderSpinner paddingY="10rem" size="xl" />
               )}
             </GridItem>
+
+            {users ? (
+              <>
+                {users.map((user: any) => {
+                  return (
+                    <GridItem key={user._id}>
+                      <UserCard myRol={myUser?.rol} user={user} />
+                    </GridItem>
+                  );
+                })}
+              </>
+            ) : (
+              <>
+                <GridItem>
+                  <LoaderSpinner paddingY="10rem" size="xl" />
+                </GridItem>
+
+                <GridItem>
+                  <LoaderSpinner paddingY="10rem" size="xl" />
+                </GridItem>
+              </>
+            )}
           </Grid>
         </Box>
       </main>
