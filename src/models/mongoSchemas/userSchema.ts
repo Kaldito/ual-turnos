@@ -6,6 +6,8 @@ const userSchema = new Schema(
     correo: { type: String, unique: true },
     password: String,
     rol: String,
+    servicePoint: { type: Schema.Types.ObjectId, ref: 'ServicePoints' },
+    department: { type: Schema.Types.ObjectId, ref: 'Departments' },
     status: String,
   },
   {

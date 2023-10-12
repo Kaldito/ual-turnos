@@ -51,11 +51,7 @@ export default function NavBar({ rol, name }: NavBarProps) {
   const adminSections = [
     {
       label: 'Departamentos',
-      href: '#',
-    },
-    {
-      label: 'Puntos de Servicio',
-      href: '#',
+      href: '/system/admin/departments',
     },
     {
       label: 'Usuarios',

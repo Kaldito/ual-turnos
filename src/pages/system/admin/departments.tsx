@@ -1,0 +1,281 @@
+import DepartmentAccordeonItem from '@/components/accordionItems/departmentAccordeonItem';
+import NavBar from '@/components/layout/navbar';
+import LoaderSpinner from '@/components/loaderSpinner';
+import { withSessionSsr } from '@/lib/auth/witSession';
+import useHasMounted from '@/lib/hasMounted';
+import {
+  Accordion,
+  Box,
+  Button,
+  Divider,
+  FormControl,
+  FormLabel,
+  Input,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverCloseButton,
+  PopoverContent,
+  PopoverHeader,
+  PopoverTrigger,
+  Textarea,
+  useToast,
+} from '@chakra-ui/react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { AiOutlinePlus } from 'react-icons/ai';
+
+export interface DepartmentsPageProps {
+  user: any;
+}
+
+export const getServerSideProps = withSessionSsr(
+  async ({ req, res }: { req: any; res: any }) => {
+    const user = req.session.user;
+
+    if (!user) {
+      return {
+        props: { user: null },
+      };
+    }
+
+    return {
+      props: { user },
+    };
+  }
+);
+
+export default function DepartmentsPage({ user }: DepartmentsPageProps) {
+  // - Esta es la pagina de gestion de departamentos para los administradores
+  const router = useRouter();
+  const toast = useToast();
+  const hasMounted = useHasMounted();
+
+  // ------- USESTATE DECLARATIONS ------- //
+  const [myUser, setMyUser] = useState<any>(null);
+  const [departments, setDepartments] = useState<any>(null);
+  const [newDepartmentName, setNewDepartmentName] = useState<string>('');
+  const [newDepartmentDescription, setNewDepartmentDescription] =
+    useState<string>('');
+
+  // ------- OBTENER MI USUARIO ------- //
+  const getMyUser = async () => {
+    await fetch(`/api/users/getUser?user_id=${user._id}`).then(async (res) => {
+      if (res.status == 200) {
+        const data = await res.json();
+
+        // - Si el rol del usuario fue actualizado cerrar sesion
+        if (data.user_data.rol != user.rol) {
+          await fetch('/api/logout');
+          router.push('/login');
+        }
+
+        setMyUser(data.user_data);
+      }
+    });
+  };
+
+  // ------- CREAR DEPARTAMENTO ------- //
+  const createDepartment = async () => {
+    // - Validar que el nombre del departamento no este vacio
+    if (newDepartmentName.trim() == '') {
+      toast({
+        title: 'Error al crear departamento',
+        description: 'El nombre del departamento no puede estar vacio',
+        status: 'error',
+        variant: 'left-accent',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
+    // - Validar que la descripcion del departamento no este vacia
+    if (newDepartmentDescription.trim() == '') {
+      toast({
+        title: 'Error al crear departamento',
+        description: 'La descripcion del departamento no puede estar vacia',
+        status: 'error',
+        variant: 'left-accent',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+
+    // - Crear el departamento
+    await fetch('/api/departments/createDepartment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: newDepartmentName,
+        description: newDepartmentDescription,
+      }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        setDepartments(null);
+
+        toast({
+          title: 'Departamento creado',
+          description: 'El departamento fue creado exitosamente',
+          status: 'success',
+          variant: 'left-accent',
+          duration: 3000,
+          isClosable: true,
+        });
+
+        setNewDepartmentName('');
+        setNewDepartmentDescription('');
+        getDepartments();
+      } else if (res.status == 400) {
+        toast({
+          title: 'Error al crear departamento',
+          description: data.message,
+          status: 'error',
+          variant: 'left-accent',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    });
+  };
+
+  // ------- OBTENER DEPARTAMENTOS ------- //
+  const getDepartments = async () => {
+    await fetch('/api/departments/getDepartments').then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        setDepartments(data.departments_data);
+      } else if (res.status == 400) {
+        setDepartments('error');
+      }
+    });
+  };
+
+  // ------- USEEFFECTS ------- //
+  useEffect(() => {
+    getMyUser();
+    getDepartments();
+
+    // - If the user is not logged in, redirect to /login
+    if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
+      router.push('/login');
+    }
+  });
+
+  // - If the user is not logged in, redirect to /login
+  if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
+    return <div>Redirecting...</div>;
+  }
+
+  // - Page
+  return (
+    <>
+      <Head>
+        <title>UAL - Usuarios</title>
+        <meta name="description" content="Generated by create next app" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      <main>
+        <NavBar rol={user.rol} name={user.username} />
+
+        {/* // ---------- SECCION DE AGREGAR Y BUSQUEDA ---------- // */}
+        <Box>
+          <h1>Gestion de Departamentos</h1>
+
+          {/* // ---------- AGREGAR DEPARTAMENTO ---------- // */}
+          <Popover>
+            {/* // - Boton para agregar departamento */}
+            <PopoverTrigger>
+              <Button colorScheme="blue" gap={3}>
+                <AiOutlinePlus />
+                Agregar Departamento
+              </Button>
+            </PopoverTrigger>
+
+            {/* // - Formulario para agregar departamento */}
+            <PopoverContent>
+              <PopoverArrow />
+
+              <PopoverCloseButton />
+
+              <PopoverHeader fontWeight={'bold'}>
+                Nuevo Departamento
+              </PopoverHeader>
+
+              <PopoverBody>
+                {/* // - NOMBRE DEL DEPARTAMENTO */}
+                <FormControl mb={3}>
+                  <FormLabel>
+                    Nombre del Departamento:
+                    <span style={{ color: 'red' }}>*</span>
+                  </FormLabel>
+
+                  <Input
+                    type="text"
+                    value={newDepartmentName}
+                    onChange={(e) => setNewDepartmentName(e.target.value)}
+                    autoComplete="off"
+                  />
+                </FormControl>
+
+                {/* // - DESCRIPCION DEL DEPARTAMENTO */}
+                <FormControl mb={3}>
+                  <FormLabel>
+                    Descripcion:<span style={{ color: 'red' }}>*</span>
+                  </FormLabel>
+
+                  <Textarea
+                    value={newDepartmentDescription}
+                    onChange={(e) =>
+                      setNewDepartmentDescription(e.target.value)
+                    }
+                  />
+                </FormControl>
+
+                {/* // - BOTON PARA AGREGAR DEPARTAMENTO */}
+                <Button
+                  w={'100%'}
+                  colorScheme="green"
+                  onClick={createDepartment}
+                >
+                  Agregar
+                </Button>
+              </PopoverBody>
+            </PopoverContent>
+          </Popover>
+        </Box>
+
+        <Divider my={4} />
+
+        {/* // ---------- LISTA DE DEPARTAMENTOS ---------- // */}
+        <Box>
+          {departments == null ? (
+            <>
+              <LoaderSpinner paddingY="15rem" size="xl" />
+            </>
+          ) : departments == 'error' ? (
+            <>No se han dado de alta departamentos...</>
+          ) : (
+            <>
+              <Accordion allowMultiple colorScheme="green">
+                {departments.map((department: any) => {
+                  return (
+                    <DepartmentAccordeonItem
+                      department={department}
+                      reloadDepartments={getDepartments}
+                    />
+                  );
+                })}
+              </Accordion>
+            </>
+          )}
+        </Box>
+      </main>
+    </>
+  );
+}
