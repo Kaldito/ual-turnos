@@ -88,6 +88,8 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
         duration: 3000,
         isClosable: true,
       });
+
+      return;
     }
 
     // - Validar que la descripcion del departamento no este vacia
@@ -100,6 +102,8 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
         duration: 3000,
         isClosable: true,
       });
+
+      return;
     }
 
     // - Crear el departamento
