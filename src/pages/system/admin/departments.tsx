@@ -2,7 +2,6 @@ import DepartmentAccordeonItem from '@/components/accordionItems/departmentAccor
 import NavBar from '@/components/layout/navbar';
 import LoaderSpinner from '@/components/loaderSpinner';
 import { withSessionSsr } from '@/lib/auth/witSession';
-import useHasMounted from '@/lib/hasMounted';
 import {
   Accordion,
   Box,
@@ -50,7 +49,6 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
   // - Esta es la pagina de gestion de departamentos para los administradores
   const router = useRouter();
   const toast = useToast();
-  const hasMounted = useHasMounted();
 
   // ------- USESTATE DECLARATIONS ------- //
   const [myUser, setMyUser] = useState<any>(null);

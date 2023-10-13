@@ -4,7 +4,8 @@ const servicePointSchema = new Schema(
   {
     name: { type: String, unique: true },
     department: { type: Schema.Types.ObjectId, ref: 'Departments' },
-    status: String,
+    status: { type: String, default: 'closed' },
+    available: { type: Boolean, default: true },
   },
   {
     timestamps: true,

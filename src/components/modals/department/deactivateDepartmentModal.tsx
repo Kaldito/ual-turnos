@@ -17,11 +17,13 @@ import { AiFillLock } from 'react-icons/ai';
 export interface IDeactivateDepartmentModalProps {
   department_data: any;
   reloadDepartments: Function;
+  reloadServicePoints: Function;
 }
 
 const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
   department_data,
   reloadDepartments,
+  reloadServicePoints,
 }) => {
   // ------- HOOKS ------- //
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -48,8 +50,9 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
           isClosable: true,
         });
 
-        reloadDepartments();
         onClose();
+        reloadDepartments();
+        reloadServicePoints();
       } else {
         toast({
           title: 'Error al desactivar el departamento.',
