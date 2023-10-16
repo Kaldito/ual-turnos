@@ -1,8 +1,41 @@
-import { Button } from '@chakra-ui/react';
+import { withSessionSsr } from '@/lib/auth/witSession';
+import Department from '@/models/mongoSchemas/departmentSchema';
+import { Box, Button } from '@chakra-ui/react';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
-export default function Home() {
+interface HomeProps {
+  user: any;
+  departments: any;
+}
+
+export const getServerSideProps = withSessionSsr(
+  async ({ req, res }: { req: any; res: any }) => {
+    const user = req.session.user;
+    const departmentsFetching = await Department.find({}).sort({
+      createdAt: -1,
+    });
+
+    console.log(departmentsFetching);
+
+    const departments = JSON.parse(JSON.stringify(departmentsFetching));
+
+    if (!user) {
+      return {
+        props: { user: null, departments: departments },
+      };
+    }
+
+    return {
+      props: { user: user, departments: departments },
+    };
+  }
+);
+
+export default function Home({ user, departments }: HomeProps) {
   // - Esta pagina sera donde los usuarios sacaran sus turnos
+  // ------- HOOKS ------- //
+  const router = useRouter();
 
   return (
     <>
@@ -14,7 +47,21 @@ export default function Home() {
       </Head>
 
       <main>
-        <Button>Sacar Turno</Button>
+        <h1>Selecciona un departamento</h1>
+
+        <Box>
+          {departments.map((department: any) => (
+            <Box key={department._id}>
+              <Button
+                onClick={() => {
+                  router.push(`/take-turn/${department.name}`);
+                }}
+              >
+                {department.name}
+              </Button>
+            </Box>
+          ))}
+        </Box>
       </main>
     </>
   );
