@@ -97,7 +97,7 @@ export default function NavBar({ rol, name }: NavBarProps) {
             onClick={() => {
               router.push('/system');
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', paddingTop: '6px' }}
           >
             <Text
               textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
@@ -180,8 +180,6 @@ const DesktopNav = ({ NAV_ITEMS }: { NAV_ITEMS: Array<NavItem> }) => {
                   textDecoration: 'none',
                   color: linkHoverColor,
                 }}
-                as="a"
-                href={navItem.href ?? '#'}
                 onClick={async () => {
                   router.push(navItem.href ?? '#');
                 }}

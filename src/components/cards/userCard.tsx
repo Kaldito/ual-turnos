@@ -162,6 +162,7 @@ export default function UserCard({ myRol, user }: UserCardProps) {
               type={passwordType}
               size={'sm'}
               placeholder="Contraseña"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={!isEditing}

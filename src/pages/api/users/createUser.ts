@@ -18,7 +18,7 @@ export default async function handler(
   try {
     await connectDB();
 
-    const { username, email, password, rol } = req.body;
+    const { username, email, password, rol, servicePoint } = req.body;
 
     // - Validando que no se haya registrado el mismo correo o contraseña
     const validateMail = await User.findOne({ correo: email });
@@ -32,13 +32,19 @@ export default async function handler(
 
     // - Encriptar la contraseña
     bcrypt.hash(password, 10, async function (err, hash) {
-      const user = new User({
+      const userObject: any = {
         username: username,
         correo: email,
         password: hash,
         rol: rol,
         status: 'active',
-      });
+      };
+
+      if (servicePoint != '') {
+        userObject['servicePoint'] = servicePoint;
+      }
+
+      const user = new User(userObject);
 
       await user.save();
     });

@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Center,
-  FormControl,
   Heading,
   Input,
   InputGroup,
@@ -19,9 +18,13 @@ import { CgDanger } from 'react-icons/cg';
 
 export interface NewUserCardProps {
   userRol: string;
+  servicePoints: any;
 }
 
-export default function NewUserCard({ userRol }: NewUserCardProps) {
+export default function NewUserCard({
+  userRol,
+  servicePoints,
+}: NewUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
 
@@ -190,7 +193,7 @@ export default function NewUserCard({ userRol }: NewUserCardProps) {
         </Heading>
 
         {/* // - NOMBRE DE USUARIO - // */}
-        <FormControl mt={3}>
+        <Box mt={3}>
           <Input
             type="text"
             size={'sm'}
@@ -199,10 +202,10 @@ export default function NewUserCard({ userRol }: NewUserCardProps) {
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="off"
           />
-        </FormControl>
+        </Box>
 
         {/* // - CORREO - // */}
-        <FormControl mt={3}>
+        <Box mt={3}>
           <InputGroup>
             <Input
               type="text"
@@ -226,16 +229,17 @@ export default function NewUserCard({ userRol }: NewUserCardProps) {
               </Box>
             </InputRightElement>
           </InputGroup>
-        </FormControl>
+        </Box>
 
         {/* // - CONTRASEÑA - // */}
-        <FormControl mt={3}>
+        <Box mt={3}>
           <InputGroup>
             <Input
               type={passwordType}
               size={'sm'}
               placeholder="Contraseña"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
             />
 
@@ -258,10 +262,10 @@ export default function NewUserCard({ userRol }: NewUserCardProps) {
               </Box>
             </InputRightElement>
           </InputGroup>
-        </FormControl>
+        </Box>
 
         {/* // - ROL - // */}
-        <FormControl mt={3}>
+        <Box mt={3}>
           <Select
             title="Selecciona tu Rol..."
             size="sm"
@@ -274,20 +278,33 @@ export default function NewUserCard({ userRol }: NewUserCardProps) {
             ) : null}
             <option value="asesor">Asesor de Servicio</option>
           </Select>
-        </FormControl>
+        </Box>
 
         {/* // - PUNTO DE SERVICIO - // */}
         {rol == 'admin' ? null : (
           <>
-            <FormControl mt={3}>
+            <Box mt={3}>
               <Select
                 size="sm"
                 value={servicePoint}
                 onChange={(e) => setServicePoint(e.target.value)}
               >
                 <option value="">Punto de Servicio (opcional)</option>
+                {
+                  // - Mapear puntos de servicio
+                  servicePoints.map((servicePoint: any) => {
+                    return (
+                      <option
+                        key={`new-${servicePoint._id}`}
+                        value={servicePoint._id}
+                      >
+                        {servicePoint.name}
+                      </option>
+                    );
+                  })
+                }
               </Select>
-            </FormControl>
+            </Box>
           </>
         )}
 

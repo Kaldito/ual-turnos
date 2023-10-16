@@ -259,6 +259,7 @@ export default function MyUserCard({ user, reloadUser }: MyUserCardProps) {
               size={'sm'}
               placeholder="Cambiar contraseña"
               value={password}
+              autoComplete="new-password"
               onChange={(e) => setPassword(e.target.value)}
               disabled={!isEditing}
             />

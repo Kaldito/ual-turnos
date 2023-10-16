@@ -5,6 +5,7 @@ import NavBar from '@/components/layout/navbar';
 import LoaderSpinner from '@/components/loaderSpinner';
 import { withSessionSsr } from '@/lib/auth/witSession';
 import useHasMounted from '@/lib/hasMounted';
+import ServicePoint from '@/models/mongoSchemas/servicePointScheme';
 import { Box, Grid, GridItem } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -12,28 +13,35 @@ import { useEffect, useState } from 'react';
 
 export interface UsersPageProps {
   user: any;
+  servicePoints: any;
 }
 
 export const getServerSideProps = withSessionSsr(
   async ({ req, res }: { req: any; res: any }) => {
     const user = req.session.user;
+    const servicePointsFetching = await ServicePoint.find({}).sort({
+      createdAt: -1,
+    });
+    const servicePoints = JSON.parse(JSON.stringify(servicePointsFetching));
 
     if (!user) {
       return {
-        props: { user: null },
+        props: { user: null, servicePoints: servicePoints },
       };
     }
 
     return {
-      props: { user },
+      props: { user: user, servicePoints: servicePoints },
     };
   }
 );
 
-export default function UsersPage({ user }: UsersPageProps) {
+export default function UsersPage({ user, servicePoints }: UsersPageProps) {
   // - Esta es la pagina de inicio del sistema para empleados
   const router = useRouter();
   const hasMounted = useHasMounted();
+
+  console.log('servicePoints', servicePoints);
 
   // ------- USESTATE DECLARATIONS ------- //
   const [myUser, setMyUser] = useState<any>(null);
@@ -75,7 +83,7 @@ export default function UsersPage({ user }: UsersPageProps) {
     if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
       router.push('/login');
     }
-  });
+  }, []);
 
   useEffect(() => {
     if (myUser) {
@@ -109,7 +117,7 @@ export default function UsersPage({ user }: UsersPageProps) {
             {/* CARD PARA NUEVO USUARIO */}
             <GridItem>
               {hasMounted ? (
-                <NewUserCard userRol={user.rol} />
+                <NewUserCard userRol={user.rol} servicePoints={servicePoints} />
               ) : (
                 <LoaderSpinner paddingY="10rem" size="xl" />
               )}
