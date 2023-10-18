@@ -25,6 +25,8 @@ async function createSessionRoute(req: any, res: NextApiResponse) {
       correo: req.body.mail,
     });
 
+    if (user.status == 'inactive') return res.status(401).send('');
+
     // - Si el usuario existe, se procede a comparar la contraseña
     if (user) {
       await bcrypt

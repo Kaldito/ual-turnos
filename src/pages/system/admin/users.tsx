@@ -55,7 +55,10 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
         const data = await res.json();
 
         // - Si el rol del usuario fue actualizado cerrar sesion
-        if (data.user_data.rol != user.rol) {
+        if (
+          data.user_data.rol != user.rol ||
+          data.user_data.status == 'inactive'
+        ) {
           await fetch('/api/logout');
           router.push('/login');
         }
@@ -120,7 +123,11 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
             {/* CARD PARA NUEVO USUARIO */}
             <GridItem>
               {hasMounted ? (
-                <NewUserCard userRol={user.rol} servicePoints={servicePoints} />
+                <NewUserCard
+                  userRol={user.rol}
+                  servicePoints={servicePoints}
+                  reloadUsers={getUsers}
+                />
               ) : (
                 <LoaderSpinner paddingY="10rem" size="xl" />
               )}
@@ -137,16 +144,23 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
 
             {users ? (
               <>
+                {/* CARDS PARA VER USUARIOS */}
                 {users.map((user: any) => {
                   return (
                     <GridItem key={user._id}>
-                      <UserCard myRol={myUser?.rol} user={user} />
+                      <UserCard
+                        myRol={myUser?.rol}
+                        user={user}
+                        servicePoints={servicePoints}
+                        reloadUsers={getUsers}
+                      />
                     </GridItem>
                   );
                 })}
               </>
             ) : (
               <>
+                {/* LOADER SPINNERS */}
                 <GridItem>
                   <LoaderSpinner paddingY="10rem" size="xl" />
                 </GridItem>

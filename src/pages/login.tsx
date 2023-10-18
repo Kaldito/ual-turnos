@@ -74,6 +74,17 @@ export default function Login({ user }: LoginProps) {
     if (response.ok) {
       // - Si el usuario es valido, redirigirlo a la pagina del sistema
       return router.push('/system');
+    } else if (response.status === 401) {
+      toast({
+        title: 'Error al iniciar sesion',
+        description: 'Usuario inactivo comuniquese con un administrador',
+        variant: 'left-accent',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      setPassword('');
     } else {
       // - Si el usuario no es valido, mostrar un mensaje de error
       toast({

@@ -18,7 +18,7 @@ export default async function handler(
     const users = await User.find({
       _id: { $ne: user_id },
       rol: { $ne: 'superadmin' },
-    });
+    }).sort({ createdAt: -1 });
 
     if (!users) {
       return res.status(400).json({ message: 'Usuario no encontrado' });

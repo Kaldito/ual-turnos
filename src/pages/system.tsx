@@ -37,7 +37,10 @@ export default function SystemHome({ user }: SystemHomeProps) {
         const data = await res.json();
 
         // - Si el rol del usuario fue actualizado cerrar sesion
-        if (data.user_data.rol != user.rol) {
+        if (
+          data.user_data.rol != user.rol ||
+          data.user_data.status == 'inactive'
+        ) {
           await fetch('/api/logout');
           router.push('/login');
         }

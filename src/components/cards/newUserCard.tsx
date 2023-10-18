@@ -19,11 +19,13 @@ import { CgDanger } from 'react-icons/cg';
 export interface NewUserCardProps {
   userRol: string;
   servicePoints: any;
+  reloadUsers: Function;
 }
 
 export default function NewUserCard({
   userRol,
   servicePoints,
+  reloadUsers,
 }: NewUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
@@ -111,6 +113,9 @@ export default function NewUserCard({
             duration: 3000,
             isClosable: true,
           });
+
+          // - Recargar usuarios
+          reloadUsers();
         } else if (res.status == 400) {
           toast({
             title: 'Error al generar usuario',

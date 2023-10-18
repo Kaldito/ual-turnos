@@ -12,33 +12,45 @@ import {
   Stack,
   Text,
   useColorModeValue,
+  useToast,
 } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import { useEffect, useState } from 'react';
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai';
 import { CgDanger } from 'react-icons/cg';
+import DeactivateUserModal from '../modals/users/deactivateUserModal';
 
 export interface UserCardProps {
   myRol: string;
   user: any;
+  servicePoints: any;
+  reloadUsers: Function;
 }
 
-export default function UserCard({ myRol, user }: UserCardProps) {
+export default function UserCard({
+  myRol,
+  user,
+  servicePoints,
+  reloadUsers,
+}: UserCardProps) {
+  // ------- HOOKS ------- //
+  const toast = useToast();
+
+  // ----- EFECTO DE BRILLO ----- //
   const glow = keyframes`
   from {
     text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #fff, 0 0 35px #fff, 0 0 40px #fff, 0 0 50px #fff, 0 0 75px #fff;
   }
   to {
     text-shadow: 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #fff, 0 0 35px #fff, 0 0 40px #fff, 0 0 50px #fff, 0 0 75px #fff, 0 0 100px #fff;
-  }
-`;
+  }`;
 
   // ------- USESTATE DECLARATIONS ------- //
   const [username, setUsername] = useState(user.username);
   const [email, setEmail] = useState(user.correo);
   const [rol, setRol] = useState(user.rol);
   const [servicePoint, setServicePoint] = useState(
-    user.service_point ? user.service_point : ''
+    user.servicePoint ? user.servicePoint : ''
   );
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [password, setPassword] = useState('');
@@ -49,10 +61,43 @@ export default function UserCard({ myRol, user }: UserCardProps) {
   const [emailPreview, setEmailPreview] = useState(user.correo);
   const [rolPreview, setRolPreview] = useState(user.rol);
   const [servicePointPreview, setServicePointPreview] = useState(
-    user.service_point ? user.service_point : ''
+    user.servicePoint ? user.servicePoint : ''
   );
 
-  const changeUserStatus = () => {};
+  const changeUserStatus = (status: string) => {
+    fetch(`/api/users/changeUserStatus`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user._id,
+        newStatus: status,
+      }),
+    }).then(async (res) => {
+      const data = await res.json();
+
+      if (res.status == 200) {
+        toast({
+          title: 'Usuario actualizado',
+          variant: 'left-accent',
+          description: data.message,
+          status: 'success',
+          duration: 3000,
+          isClosable: true,
+        });
+
+        reloadUsers();
+      } else {
+        toast({
+          title: 'Error al actualizar usuario',
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    });
+  };
 
   // ------- ACTIVAR/DESACTIVAR EDICION ------- //
   useEffect(() => {
@@ -221,6 +266,19 @@ export default function UserCard({ myRol, user }: UserCardProps) {
                 disabled={!isEditing}
               >
                 <option value="">Punto de Servicio (opcional)</option>
+                {
+                  // - Mapear puntos de servicio
+                  servicePoints.map((servicePoint: any) => {
+                    return (
+                      <option
+                        key={`new-${servicePoint._id}`}
+                        value={servicePoint._id}
+                      >
+                        {servicePoint.name}
+                      </option>
+                    );
+                  })
+                }
               </Select>
             </FormControl>
           </>
@@ -268,30 +326,11 @@ export default function UserCard({ myRol, user }: UserCardProps) {
             <>
               {user.status == 'active' ? (
                 <>
-                  <Button
-                    flex={1}
-                    fontSize={'sm'}
-                    rounded={'xl'}
-                    bg={'green.400'}
-                    color={'white'}
-                    boxShadow={
-                      '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
-                    }
-                    _hover={{
-                      bg: 'green.300',
-                    }}
-                    _focus={{
-                      bg: 'green.300',
-                    }}
-                  >
-                    <Box
-                      css={{
-                        animation: `${glow} 1s ease-in-out infinite alternate`,
-                      }}
-                    >
-                      Activo
-                    </Box>
-                  </Button>
+                  <DeactivateUserModal
+                    glow={glow}
+                    changeUserStatus={changeUserStatus}
+                    username={user.username}
+                  />
                 </>
               ) : (
                 <>
@@ -310,6 +349,12 @@ export default function UserCard({ myRol, user }: UserCardProps) {
                     _focus={{
                       bg: 'red.400',
                     }}
+                    onClick={
+                      // - CAMBIAR ESTADO DEL USUARIO
+                      () => {
+                        changeUserStatus('active');
+                      }
+                    }
                   >
                     Inactivo
                   </Button>
