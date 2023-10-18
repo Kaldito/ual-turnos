@@ -16,12 +16,16 @@ export interface IDeactivateUserModalProps {
   glow: string;
   changeUserStatus: Function;
   username: string;
+  myRol: string;
+  userRol: string;
 }
 
 const DeactivateUserModal: React.FC<IDeactivateUserModalProps> = ({
   glow,
   changeUserStatus,
   username,
+  myRol,
+  userRol,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -44,6 +48,8 @@ const DeactivateUserModal: React.FC<IDeactivateUserModalProps> = ({
           bg: 'green.300',
         }}
         onClick={() => {
+          if (myRol == 'admin' && userRol == 'admin') return;
+
           onOpen();
         }}
       >

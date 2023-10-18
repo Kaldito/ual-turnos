@@ -20,12 +20,14 @@ export interface NewUserCardProps {
   userRol: string;
   servicePoints: any;
   reloadUsers: Function;
+  setUsers: Function;
 }
 
 export default function NewUserCard({
   userRol,
   servicePoints,
   reloadUsers,
+  setUsers,
 }: NewUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
@@ -99,6 +101,7 @@ export default function NewUserCard({
 
         if (res.status == 200) {
           // - Limpiar campos
+          setUsers(null);
           setUsername('');
           setEmail('');
           setPassword('');
@@ -115,7 +118,9 @@ export default function NewUserCard({
           });
 
           // - Recargar usuarios
-          reloadUsers();
+          setTimeout(() => {
+            reloadUsers();
+          }, 1000);
         } else if (res.status == 400) {
           toast({
             title: 'Error al generar usuario',
@@ -125,6 +130,8 @@ export default function NewUserCard({
             duration: 3000,
             isClosable: true,
           });
+
+          return;
         } else {
           toast({
             title: 'Error al generar usuario',
@@ -134,6 +141,8 @@ export default function NewUserCard({
             duration: 3000,
             isClosable: true,
           });
+
+          return;
         }
       })
       .catch((err) => {

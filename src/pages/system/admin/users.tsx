@@ -71,9 +71,9 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
   // ------- OBTENER USUARIOS ------- //
   const getUsers = async () => {
     await fetch(`/api/users/getUsers?user_id=${user._id}`).then(async (res) => {
-      if (res.status == 200) {
-        const data = await res.json();
+      const data = await res.json();
 
+      if (res.status == 200) {
         setUsers(data.users_data);
       }
     });
@@ -124,6 +124,7 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
             <GridItem>
               {hasMounted ? (
                 <NewUserCard
+                  setUsers={setUsers}
                   userRol={user.rol}
                   servicePoints={servicePoints}
                   reloadUsers={getUsers}

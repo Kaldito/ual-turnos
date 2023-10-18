@@ -330,6 +330,8 @@ export default function UserCard({
                     glow={glow}
                     changeUserStatus={changeUserStatus}
                     username={user.username}
+                    myRol={myRol}
+                    userRol={user.rol}
                   />
                 </>
               ) : (
@@ -352,6 +354,8 @@ export default function UserCard({
                     onClick={
                       // - CAMBIAR ESTADO DEL USUARIO
                       () => {
+                        if (myRol == 'admin' && user.rol == 'admin') return;
+
                         changeUserStatus('active');
                       }
                     }
