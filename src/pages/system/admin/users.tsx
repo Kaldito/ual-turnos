@@ -5,6 +5,7 @@ import NavBar from '@/components/layout/navbar';
 import LoaderSpinner from '@/components/loaderSpinner';
 import { withSessionSsr } from '@/lib/auth/witSession';
 import useHasMounted from '@/lib/hasMounted';
+import connectDB from '@/models/mongoConnection';
 import ServicePoint from '@/models/mongoSchemas/servicePointScheme';
 import { Box, Grid, GridItem } from '@chakra-ui/react';
 import Head from 'next/head';
@@ -18,6 +19,8 @@ export interface UsersPageProps {
 
 export const getServerSideProps = withSessionSsr(
   async ({ req, res }: { req: any; res: any }) => {
+    await connectDB();
+
     const user = req.session.user;
     const servicePointsFetching = await ServicePoint.find({}).sort({
       createdAt: -1,
@@ -75,12 +78,14 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
 
   // ------- USEEFFECTS ------- //
   useEffect(() => {
-    getMyUser();
-
     // - If the user is not logged in, redirect to /login
     if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
       router.push('/login');
+
+      return;
     }
+
+    getMyUser();
   }, []);
 
   useEffect(() => {

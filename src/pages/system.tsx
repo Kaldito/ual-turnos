@@ -48,20 +48,26 @@ export default function SystemHome({ user }: SystemHomeProps) {
   };
 
   useEffect(() => {
-    getMyUser();
-
     // - If the user is not logged in, redirect to /login
-    if (!user) {
+    if (user == null) {
       router.push('/login');
+
+      return;
     }
 
     if (user.rol != 'asesor') {
       router.push('/system/admin/departments');
+
+      return;
     }
 
     if (user.rol == 'asesor') {
       router.push('/system/asesor/my-service-point');
+
+      return;
     }
+
+    getMyUser();
   });
 
   // - If the user is not logged in, redirect to /login

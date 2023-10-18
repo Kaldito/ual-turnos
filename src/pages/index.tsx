@@ -1,4 +1,5 @@
 import { withSessionSsr } from '@/lib/auth/witSession';
+import connectDB from '@/models/mongoConnection';
 import Department from '@/models/mongoSchemas/departmentSchema';
 import { Box, Button } from '@chakra-ui/react';
 import Head from 'next/head';
@@ -11,6 +12,8 @@ interface HomeProps {
 
 export const getServerSideProps = withSessionSsr(
   async ({ req, res }: { req: any; res: any }) => {
+    await connectDB();
+
     const user = req.session.user;
     const departmentsFetching = await Department.find({}).sort({
       createdAt: -1,

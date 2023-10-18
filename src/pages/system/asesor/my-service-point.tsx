@@ -140,12 +140,14 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   // ------- USEEFFECTS ------- //
   useEffect(() => {
-    getMyUser();
-
     // - If the user is not logged in, redirect to /login
     if (!user || user.rol != 'asesor') {
       router.push('/login');
+
+      return;
     }
+
+    getMyUser();
   }, []);
 
   // ------- OBTENER EL PS CUANDO CAMBIO EL USER ------- //

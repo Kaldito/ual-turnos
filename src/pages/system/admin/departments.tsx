@@ -158,13 +158,15 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
 
   // ------- USEEFFECTS ------- //
   useEffect(() => {
-    getMyUser();
-    getDepartments();
-
     // - If the user is not logged in, redirect to /login
     if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
       router.push('/login');
+
+      return;
     }
+
+    getMyUser();
+    getDepartments();
   }, []);
 
   // - If the user is not logged in, redirect to /login
