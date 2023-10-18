@@ -1,4 +1,4 @@
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, useToast } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -19,6 +19,7 @@ export default function TakeTurn({ department }: TakeTurnProps) {
   // - Esta pagina sera donde los usuarios sacaran sus turnos
   // --------- HOOKS --------- //
   const router = useRouter();
+  const toast = useToast();
 
   // --------- SACAR UN TURNO --------- //
   const takeTurn = async () => {
@@ -35,6 +36,23 @@ export default function TakeTurn({ department }: TakeTurnProps) {
 
       if (res.status == 200) {
         router.push(`/my-turn?turn_id=${data.turn_id}`);
+      } else if (res.status == 400) {
+        toast({
+          title: 'Error al sacar turno',
+          description: data.message,
+          variant: 'left-accent',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
+      } else {
+        toast({
+          title: 'Error al sacar turno',
+          description: 'Error desconocido',
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        });
       }
     });
   };

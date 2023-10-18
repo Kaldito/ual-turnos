@@ -64,6 +64,7 @@ export default function UserCard({
     user.servicePoint ? user.servicePoint : ''
   );
 
+  // ------- FUNCION PARA CAMBIAR ESTADO DEL USUARIO ------- //
   const changeUserStatus = (status: string) => {
     fetch(`/api/users/changeUserStatus`, {
       method: 'POST',

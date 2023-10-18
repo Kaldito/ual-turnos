@@ -4,6 +4,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 
 // - Para usar este endpoint, se debe hacer una petición PUT con los siguientes datos:
 // {
+//   user_id: 'id del usuario',
+//   newStatus: 'nuevo estado'
 // }
 
 export default async function handler(

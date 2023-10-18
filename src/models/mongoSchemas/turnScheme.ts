@@ -5,6 +5,7 @@ const turnSchema = new Schema(
     turn: String,
     department: { type: Schema.Types.ObjectId, ref: 'Departments' },
     servicePoint: { type: Schema.Types.ObjectId, ref: 'ServicePoints' },
+    user: { type: Schema.Types.ObjectId, ref: 'Users' },
     status: { type: String, default: 'pending' },
   },
   {

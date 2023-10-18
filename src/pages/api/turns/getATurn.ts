@@ -15,7 +15,8 @@ export default async function handler(
   try {
     await connectDB();
 
-    const { service_point_department, service_point_id } = req.query;
+    const { service_point_department, service_point_id, my_user_id } =
+      req.query;
 
     const turns = await Turn.find({
       department: service_point_department,
@@ -33,6 +34,7 @@ export default async function handler(
 
     await Turn.findByIdAndUpdate(turns[0]._id, {
       servicePoint: service_point_id,
+      user: my_user_id,
       status: 'attending',
     });
 
