@@ -1,6 +1,7 @@
 import { Box, Button } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 
 interface TakeTurnProps {
   department: string;
@@ -16,6 +17,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
 export default function TakeTurn({ department }: TakeTurnProps) {
   // - Esta pagina sera donde los usuarios sacaran sus turnos
+  // --------- HOOKS --------- //
+  const router = useRouter();
 
   // --------- SACAR UN TURNO --------- //
   const takeTurn = async () => {
@@ -27,6 +30,12 @@ export default function TakeTurn({ department }: TakeTurnProps) {
       body: JSON.stringify({
         department_name: department,
       }),
+    }).then(async (res) => {
+      const data = await res.json();
+
+      if (res.status == 200) {
+        router.push(`/my-turn?turn_id=${data.turn_id}`);
+      }
     });
   };
 
@@ -43,7 +52,14 @@ export default function TakeTurn({ department }: TakeTurnProps) {
         Sacar un turno - {department}
         <Box>Aqui se va a mostrar las personas que hay en la fila</Box>
         <Box>
-          <Button>Cancelar</Button>
+          <Button
+            onClick={() => {
+              router.push('/');
+            }}
+          >
+            Cancelar
+          </Button>
+
           <Button onClick={takeTurn}>Sacar turno</Button>
         </Box>
       </main>

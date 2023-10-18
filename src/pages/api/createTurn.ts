@@ -44,7 +44,17 @@ export default async function handler(
 
     await newTurn.save();
 
-    res.status(200).json({ message: 'Turno creado correctamente' });
+    const turnGenerated = await Turn.findOne({
+      turn: turnString,
+      status: 'pending',
+    });
+
+    res
+      .status(200)
+      .json({
+        message: 'Turno creado correctamente',
+        turn_id: turnGenerated._id,
+      });
   } catch (error) {
     res.status(500).json({ message: error });
   }

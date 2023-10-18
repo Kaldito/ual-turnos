@@ -1,5 +1,6 @@
+import Navbar from '@/components/layout/navbar';
 import { withSessionSsr } from '@/lib/auth/witSession';
-import { useToast } from '@chakra-ui/react';
+import { Box, Button, useToast } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -31,6 +32,9 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   // ------- USESTATE DECLARATIONS ------- //
   const [myUser, setMyUser] = useState<any>(null);
+  const [myServicePoint, setMyServicePoint] = useState<any>(null);
+  const [myServicePointStatus, setMyServicePointStatus] = useState<any>(null);
+  const [myTurn, setMyTurn] = useState<any>(null);
 
   // ------- OBTENER MI USUARIO ------- //
   const getMyUser = async () => {
@@ -49,6 +53,91 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
     });
   };
 
+  // ------- OBTENER MI PUNTO DE SERVICIO ------- //
+  const getMyServicePoint = async (getType: string) => {
+    // - getType puede ser servicePoint o servicePointStatus
+
+    if (myUser.servicePoint == undefined || myUser.servicePoint == null) {
+      setMyServicePoint('no asignado');
+
+      return;
+    }
+
+    await fetch(
+      `/api/servicePoints/getServicePoint?service_point_id=${myUser.servicePoint}`
+    ).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        if (getType == 'servicePoint') {
+          setMyServicePoint(data.service_point_data);
+        } else if (getType == 'servicePointStatus') {
+          setMyServicePointStatus(data.service_point_data.status);
+        }
+      }
+    });
+  };
+
+  // ------- CAMBIAR EL ESTADO DEL PUNTO DE SERVICIO ------- //
+  const changeServicePointStatus = async (status: string) => {
+    await fetch('/api/servicePoints/changeStatus', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        service_point_id: myUser.servicePoint,
+        newStatus: status,
+      }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        getMyServicePoint('servicePointStatus');
+        getMyTurn();
+      } else {
+        toast({
+          title: data.message,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    });
+  };
+
+  // ------- OBTENER UN TURNO ------- //
+  const getATurn = async () => {
+    await fetch(
+      `/api/turns/getATurn?service_point_department=${myServicePoint.department}&service_point_id=${myServicePoint._id}`
+    ).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        getMyTurn();
+      } else if (res.status == 404) {
+        toast({
+          title: data.message,
+          status: 'error',
+          variant: 'left-accent',
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    });
+  };
+
+  // ------- OBTENER MI TURNO ------- //
+  const getMyTurn = async () => {
+    await fetch(
+      `/api/turns/getMyTurn?service_point_id=${myServicePoint._id}`
+    ).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        setMyTurn(data.my_turn_data);
+      } else if (res.status == 404) {
+        setMyTurn('404');
+      }
+    });
+  };
+
   // ------- USEEFFECTS ------- //
   useEffect(() => {
     getMyUser();
@@ -59,6 +148,20 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
     }
   }, []);
 
+  // ------- OBTENER EL PS CUANDO CAMBIO EL USER ------- //
+  useEffect(() => {
+    if (myUser != null) {
+      getMyServicePoint('servicePoint');
+      getMyServicePoint('servicePointStatus');
+    }
+  }, [myUser]);
+
+  useEffect(() => {
+    if (myServicePoint != null) {
+      getMyTurn();
+    }
+  }, [myServicePoint]);
+
   return (
     <>
       <Head>
@@ -68,7 +171,68 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>Gestionar mi punto de servicio</main>
+      <main>
+        <Navbar rol={user.rol} name={user.username} />
+
+        {myServicePoint == null ? (
+          <>Cargando...</>
+        ) : myServicePoint == 'no asignado' ? (
+          <>Punto de servicio no asignado</>
+        ) : (
+          <>
+            Gestionar mi punto de servicio {myServicePoint.name}
+            <Box>
+              {myTurn == null ? (
+                <>Cargando...</>
+              ) : myTurn == '404' ? (
+                <>No has tomado un turno</>
+              ) : (
+                <>{`Atendiendo turno: ${myTurn.turn}`}</>
+              )}
+            </Box>
+            <Box>Mostrar turnos siguientes</Box>
+            {/* // ---------- ABRIR/CERRAR CAJA ---------- // */}
+            <Box>
+              {myServicePointStatus == null ? (
+                <></>
+              ) : myServicePointStatus == 'open' ? (
+                <>
+                  <Button
+                    colorScheme="red"
+                    onClick={() => {
+                      changeServicePointStatus('closed');
+                    }}
+                  >
+                    Cerrar Punto de Servicio
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    colorScheme="green"
+                    onClick={() => {
+                      changeServicePointStatus('open');
+                    }}
+                  >
+                    Abrir Punto de servicio
+                  </Button>
+                </>
+              )}
+            </Box>
+            <Box>
+              {myServicePointStatus == null ? (
+                <></>
+              ) : myServicePointStatus == 'open' ? (
+                <>
+                  <Button onClick={getATurn}>Atender un turno</Button>
+                </>
+              ) : (
+                <></>
+              )}
+            </Box>
+          </>
+        )}
+      </main>
     </>
   );
 }

@@ -56,11 +56,11 @@ export default function SystemHome({ user }: SystemHomeProps) {
     }
 
     if (user.rol != 'asesor') {
-      router.push('system/admin/departments');
+      router.push('/system/admin/departments');
     }
 
     if (user.rol == 'asesor') {
-      router.push('system/asesor/my-service-point');
+      router.push('/system/asesor/my-service-point');
     }
   });
 

@@ -16,8 +16,6 @@ export const getServerSideProps = withSessionSsr(
       createdAt: -1,
     });
 
-    console.log(departmentsFetching);
-
     const departments = JSON.parse(JSON.stringify(departmentsFetching));
 
     if (!user) {

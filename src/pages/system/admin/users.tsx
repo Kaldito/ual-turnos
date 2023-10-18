@@ -41,8 +41,6 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
   const router = useRouter();
   const hasMounted = useHasMounted();
 
-  console.log('servicePoints', servicePoints);
-
   // ------- USESTATE DECLARATIONS ------- //
   const [myUser, setMyUser] = useState<any>(null);
   const [users, setUsers] = useState<any>(null);
