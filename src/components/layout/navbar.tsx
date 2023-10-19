@@ -14,7 +14,6 @@ import {
   IconButton,
   Menu,
   MenuButton,
-  MenuDivider,
   MenuItem,
   MenuList,
   Popover,
@@ -132,10 +131,6 @@ export default function NavBar({ rol, name }: NavBarProps) {
             </MenuButton>
 
             <MenuList>
-              <MenuItem>Perfil</MenuItem>
-
-              <MenuDivider />
-
               <MenuItem
                 onClick={async () => {
                   await fetch('/api/logout');

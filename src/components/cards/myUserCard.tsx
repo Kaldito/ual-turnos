@@ -212,16 +212,20 @@ export default function MyUserCard({ user, reloadUser }: MyUserCardProps) {
         </Text>
 
         {/* // - NOMBRE DE USUARIO - // */}
-        <FormControl mt={3}>
-          <Input
-            type="text"
-            size={'sm'}
-            placeholder="Nombre de usuario"
-            value={isEditing ? username : usernamePreview}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={user.rol == 'superadmin' ? !isEditing : true}
-          />
-        </FormControl>
+        {user.rol == 'admin' ? null : (
+          <>
+            <FormControl mt={3}>
+              <Input
+                type="text"
+                size={'sm'}
+                placeholder="Nombre de usuario"
+                value={isEditing ? username : usernamePreview}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={user.rol == 'superadmin' ? !isEditing : true}
+              />
+            </FormControl>
+          </>
+        )}
 
         {/* // - CORREO - // */}
         <FormControl mt={3}>

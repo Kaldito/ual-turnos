@@ -100,6 +100,128 @@ export default function UserCard({
     });
   };
 
+  // ------- UPDATE USER ------- //
+  const updateUser = async () => {
+    // - Validar que el usuario o el correo no esten en blanco
+    if (username == '' || email == '') {
+      toast({
+        title: 'Error al actualizar usuario',
+        description:
+          'El nombre de usuario o el correo no puede estar en blanco.',
+        status: 'error',
+        variant: 'left-accent',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    // - Validar si el email es valido
+    if (!isValidEmail) {
+      toast({
+        title: 'Error al actualizar usuario',
+        description: 'El correo no es valido.',
+        variant: 'left-accent',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    // - Validar que la contra no se sea menor a ocho si es que se va a cambiar
+    if (password != '' && password.length < 8) {
+      toast({
+        title: 'Error al actualizar usuario',
+        description: 'La nueva contraseña debe tener al menos 8 caracteres.',
+        status: 'error',
+        variant: 'left-accent',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      return;
+    }
+
+    // - Objeto donde se pondran los cambios que se realicen
+    const changeObj: any = {
+      username: username,
+      correo: email,
+      rol: rol,
+      servicePoint: servicePoint != '' ? servicePoint : null,
+    };
+
+    // -  Añadir la contraseña solo si se va a cambiar
+    if (password != '') {
+      changeObj.password = password;
+    }
+
+    // - Fetch para actualizar usuario
+    await fetch('/api/users/updateUser', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        user_id: user._id,
+        changes: changeObj,
+      }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+
+        if (res.status == 200) {
+          setIsEditing(false);
+          setUsernamePreview(username);
+          setEmailPreview(email);
+          setRolPreview(rol);
+          setServicePointPreview(servicePoint);
+          setPassword('');
+          reloadUsers();
+
+          toast({
+            title: 'Usuario actualizado',
+            description: 'Se ha actualizado el usuario correctamente.',
+            variant: 'left-accent',
+            status: 'success',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else if (res.status == 400) {
+          toast({
+            title: 'Error al actualizar usuario',
+            description: data.message,
+            variant: 'left-accent',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: 'Error al actualizar usuario',
+            description: 'Ha ocurrido un error al actualizar el usuario.',
+            variant: 'left-accent',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      })
+      .catch((err) => {
+        toast({
+          title: 'Error',
+          description: 'Ha ocurrido un error al actualizar el usuario.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+
+        console.log(err);
+      });
+  };
+
   // ------- ACTIVAR/DESACTIVAR EDICION ------- //
   useEffect(() => {
     if (!isEditing) {
@@ -111,6 +233,13 @@ export default function UserCard({
       setPassword('');
     }
   }, [isEditing]);
+
+  // ------- QUITAR PS SI CAMBIA EL ROL ------- //
+  useEffect(() => {
+    if (rol != 'asesor') {
+      setServicePoint('');
+    }
+  }, [rol]);
 
   // ------- VER/OCULTAR PASSWORD ------- //
   useEffect(() => {
@@ -161,17 +290,21 @@ export default function UserCard({
         </Text>
 
         {/* // - NOMBRE DE USUARIO - // */}
-        <FormControl mt={3}>
-          <Input
-            type="text"
-            size={'sm'}
-            placeholder="Nombre de usuario"
-            value={isEditing ? username : usernamePreview}
-            onChange={(e) => setUsernamePreview(e.target.value)}
-            autoComplete="off"
-            disabled={myRol == 'superadmin' ? !isEditing : true}
-          />
-        </FormControl>
+        {myRol == 'admin' ? null : (
+          <>
+            <FormControl mt={3}>
+              <Input
+                type="text"
+                size={'sm'}
+                placeholder="Nombre de usuario"
+                value={isEditing ? username : usernamePreview}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="off"
+                disabled={myRol == 'superadmin' ? !isEditing : true}
+              />
+            </FormControl>
+          </>
+        )}
 
         {/* // - CORREO - // */}
         <FormControl mt={3}>
@@ -319,6 +452,12 @@ export default function UserCard({
                 _focus={{
                   bg: 'green.6  00',
                 }}
+                onClick={
+                  // - ACTUALIZAR USUARIO
+                  () => {
+                    updateUser();
+                  }
+                }
               >
                 Guardar
               </Button>
