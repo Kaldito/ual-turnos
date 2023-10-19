@@ -20,11 +20,12 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { AiFillLock, AiFillSetting, AiFillUnlock } from 'react-icons/ai';
-import { BiEdit } from 'react-icons/bi';
+import { AiFillSetting, AiFillUnlock } from 'react-icons/ai';
 import LoaderSpinner from '../loaderSpinner';
 import DeactivateDepartmentModal from '../modals/department/deactivateDepartmentModal';
 import EditDepartmentModal from '../modals/department/editDepartmentModal';
+import DeactivateServicePointModal from '../modals/servicePoint/deactivateServicePointModal';
+import EditServicePointModal from '../modals/servicePoint/editServicePointModal';
 import NewServicePointModal from '../modals/servicePoint/newServicePointModal';
 
 export interface IDepartmentAccordeonItemProps {
@@ -70,6 +71,42 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
         toast({
           title: 'Error al activar el departamento.',
           description: `Ha ocurrido un error al activar el departamento ${department.name}.`,
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    });
+  };
+
+  // ------- ACTIVAR PUNTO DE SERVICIO ------- //
+  const activateServicePoint = async (servicePoint: any) => {
+    await fetch(`/api/servicePoints/activateServicePoint`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        service_point_id: servicePoint._id,
+      }),
+    }).then(async (res) => {
+      const data = await res.json();
+      if (res.status == 200) {
+        toast({
+          title: 'Punto de servicio activado.',
+          description: `El punto de servicio ${servicePoint.name} ha sido activado.`,
+          status: 'success',
+          variant: 'left-accent',
+          duration: 5000,
+          isClosable: true,
+        });
+
+        reloadDepartments();
+        getServicePoints();
+      } else {
+        toast({
+          title: 'Error al activar el punto de servicio.',
+          description: `Ha ocurrido un error al activar el punto de servicio ${servicePoint.name}.`,
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -247,21 +284,20 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
 
                               <MenuList>
                                 {/* // - EDITAR PUNTO DE SERVICIO - // */}
-                                <MenuItem icon={<BiEdit />}>
-                                  Editar Punto de Servicio
-                                </MenuItem>
+                                <EditServicePointModal
+                                  servicePoint_data={servicePoint}
+                                  reloadServicePoints={getServicePoints}
+                                />
 
                                 {department.available ? (
                                   <>
                                     {servicePoint.available ? (
                                       <>
                                         {/* // - DESACTIVAR PUNTO DE SERVICIO - // */}
-                                        <MenuItem
-                                          icon={<AiFillLock />}
-                                          color={'red'}
-                                        >
-                                          Desactivar Punto de Servicio
-                                        </MenuItem>
+                                        <DeactivateServicePointModal
+                                          servicePoint_data={servicePoint}
+                                          reloadServicePoints={getServicePoints}
+                                        />
                                       </>
                                     ) : (
                                       <>
@@ -269,6 +305,10 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
                                         <MenuItem
                                           icon={<AiFillUnlock />}
                                           color={'green'}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            activateServicePoint(servicePoint);
+                                          }}
                                         >
                                           Activar Punto de Servicio
                                         </MenuItem>

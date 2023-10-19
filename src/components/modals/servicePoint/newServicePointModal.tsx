@@ -76,7 +76,8 @@ const NewServicePointModal: React.FC<INewServicePointModalProps> = ({
       } else if (res.status == 400) {
         toast({
           title: 'Error al crear el punto de servicio.',
-          description: `El nombre del punto de servicio ya existe.`,
+          description: data.message,
+          variant: 'left-accent',
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -131,6 +132,11 @@ const NewServicePointModal: React.FC<INewServicePointModalProps> = ({
               El <span style={{ fontWeight: 'bold' }}>Punto de Servicio</span>{' '}
               creado se tendra que asignar a todos los asesores para los que se
               desee que este disponible desde la pagina de gestion usuarios.
+            </Text>
+
+            <Text mt={2} fontSize={'0.9rem'} color={'red'} fontWeight={'bold'}>
+              Solo puede haber un maximo de 8 puntos de servicio por
+              departamento.
             </Text>
 
             {/* // - NOMBRE DEL PUNTO DE SERVICIO - // */}

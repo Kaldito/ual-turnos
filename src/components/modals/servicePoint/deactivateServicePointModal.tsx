@@ -14,36 +14,33 @@ import {
 } from '@chakra-ui/react';
 import { AiFillLock } from 'react-icons/ai';
 
-export interface IDeactivateDepartmentModalProps {
-  department_data: any;
-  reloadDepartments: Function;
+export interface IDeactivateServicePointModalProps {
+  servicePoint_data: any;
   reloadServicePoints: Function;
 }
 
-const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
-  department_data,
-  reloadDepartments,
-  reloadServicePoints,
-}) => {
+const DeactivateDepartmentModal: React.FC<
+  IDeactivateServicePointModalProps
+> = ({ servicePoint_data, reloadServicePoints }) => {
   // ------- HOOKS ------- //
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const deactivateDepartment = async () => {
-    await fetch(`/api/departments/deactivateDepartment`, {
+  const deactivateServicePoint = async () => {
+    await fetch(`/api/servicePoints/deactivateServicePoint`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        department_id: department_data._id,
+        service_point_id: servicePoint_data._id,
       }),
     }).then(async (res) => {
       const data = await res.json();
       if (res.status == 200) {
         toast({
-          title: 'Departamento desactivado.',
-          description: `El departamento ${department_data.name} ha sido desactivado.`,
+          title: 'Punto de servicio desactivado.',
+          description: `El punto de servicio ${servicePoint_data.name} ha sido desactivado.`,
           status: 'success',
           variant: 'left-accent',
           duration: 5000,
@@ -51,11 +48,10 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
         });
 
         onClose();
-        reloadDepartments();
         reloadServicePoints();
       } else if (res.status == 400) {
         toast({
-          title: 'Error al desactivar el departamento.',
+          title: 'Error al desactivar punto de servicio.',
           description: data.message,
           variant: 'left-accent',
           status: 'error',
@@ -64,8 +60,8 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
         });
       } else {
         toast({
-          title: 'Error al desactivar el departamento.',
-          description: `Ha ocurrido un error al desactivar el departamento ${department_data.name}.`,
+          title: 'Error al desactivar punto de servicio.',
+          description: `Ha ocurrido un error al desactivar el punto de servicio ${servicePoint_data.name}.`,
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -85,7 +81,7 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
           onOpen();
         }}
       >
-        Desactivar Departamento
+        Desactivar Punto de Servicio
       </MenuItem>
 
       {/* // - MODAL - // */}
@@ -96,7 +92,7 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
           {/* // - HEADER - // */}
           <ModalHeader>
             <span style={{ fontWeight: 'bold', color: 'red' }}>
-              Desactivar Departamento
+              Desactivar Punto de Servicio
             </span>
           </ModalHeader>
 
@@ -106,10 +102,9 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
 
           {/* // - BODY - // */}
           <ModalBody>
-            El departamento{' '}
-            <span style={{ fontWeight: 'bold' }}>{department_data.name}</span>{' '}
-            se desactivara, lo cual implica que no se podran generar turnos para
-            este departamento hasta que se reactive.
+            <span style={{ fontWeight: 'bold' }}>{servicePoint_data.name}</span>{' '}
+            se desactivara, lo cual implica que no se podran asignar turnos a
+            este punto de servicio hasta que se reactive.
           </ModalBody>
 
           {/* // - FOOTER - // */}
@@ -118,7 +113,7 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
               Cancelar
             </Button>
 
-            <Button colorScheme="red" onClick={deactivateDepartment}>
+            <Button colorScheme="red" onClick={deactivateServicePoint}>
               Desactivar
             </Button>
           </ModalFooter>
