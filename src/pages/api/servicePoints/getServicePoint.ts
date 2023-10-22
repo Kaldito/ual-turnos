@@ -1,4 +1,5 @@
 import connectDB from '@/models/mongoConnection';
+import Department from '@/models/mongoSchemas/departmentSchema';
 import ServicePoint from '@/models/mongoSchemas/servicePointScheme';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -14,9 +15,17 @@ export default async function handler(
 
     const { service_point_id } = req.query;
 
-    console.log(service_point_id);
-
     const servicePoint = await ServicePoint.findOne({ _id: service_point_id });
+
+    const department = await Department.findOne({
+      _id: servicePoint.department,
+    });
+
+    if (servicePoint.available == false || department.available == false) {
+      res.status(404).json({
+        message: 'El punto de servicio no se encuentra disponible',
+      });
+    }
 
     res.status(200).json({
       message: 'Puntos de servicio obtenido correctamente',

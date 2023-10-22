@@ -1,6 +1,6 @@
 import Navbar from '@/components/layout/navbar';
 import { withSessionSsr } from '@/lib/auth/witSession';
-import { Box, Button, useToast } from '@chakra-ui/react';
+import { Box, Button, Spinner, useToast } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -35,6 +35,9 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   const [myServicePoint, setMyServicePoint] = useState<any>(null);
   const [myServicePointStatus, setMyServicePointStatus] = useState<any>(null);
   const [myTurn, setMyTurn] = useState<any>(null);
+  const [department, setDepartment] = useState<any>(null);
+  const [queue, setQueue] = useState<any>(null);
+  const [loadingButton, setLoadingButton] = useState<boolean>(false);
 
   // ------- OBTENER MI USUARIO ------- //
   const getMyUser = async () => {
@@ -59,6 +62,7 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   // ------- OBTENER MI PUNTO DE SERVICIO ------- //
   const getMyServicePoint = async (getType: string) => {
     // - getType puede ser servicePoint o servicePointStatus
+    let available = true;
 
     if (myUser.servicePoint == undefined || myUser.servicePoint == null) {
       setMyServicePoint('no asignado');
@@ -76,12 +80,23 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         } else if (getType == 'servicePointStatus') {
           setMyServicePointStatus(data.service_point_data.status);
         }
+      } else if (res.status == 404) {
+        setMyServicePoint('no disponible');
+        available = false;
       }
     });
+
+    return available;
   };
 
   // ------- CAMBIAR EL ESTADO DEL PUNTO DE SERVICIO ------- //
   const changeServicePointStatus = async (status: string) => {
+    let available = await getMyServicePoint('servicePointStatus');
+
+    if (!available) {
+      return;
+    }
+
     await fetch('/api/servicePoints/changeStatus', {
       method: 'POST',
       headers: {
@@ -109,6 +124,14 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   // ------- OBTENER UN TURNO ------- //
   const getATurn = async () => {
+    setLoadingButton(true);
+
+    let available = await getMyServicePoint('servicePointStatus');
+
+    if (!available) {
+      return;
+    }
+
     await fetch(
       `/api/turns/getATurn?service_point_department=${myServicePoint.department}&service_point_id=${myServicePoint._id}&my_user_id=${myUser._id}`
     ).then(async (res) => {
@@ -125,6 +148,10 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         });
       }
     });
+
+    setTimeout(() => {
+      setLoadingButton(false);
+    }, 500);
   };
 
   // ------- OBTENER MI TURNO ------- //
@@ -137,6 +164,54 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         setMyTurn(data.my_turn_data);
       } else if (res.status == 404) {
         setMyTurn('404');
+      }
+    });
+  };
+
+  // --------- OBTENER LA FILA DE TURNOS --------- //
+  const getQueue = async () => {
+    await fetch(`/api/getQueue?department_name=${department.name}`).then(
+      async (res) => {
+        const data = await res.json();
+
+        if (res.status == 200) {
+          setQueue(data.queue_data);
+        } else if (res.status == 404) {
+          setQueue('404');
+        } else if (res.status == 400) {
+          toast({
+            title: 'Error al consultar la fila',
+            description: data.message,
+            variant: 'left-accent',
+            status: 'error',
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: 'Error al consultar la fila',
+            description: 'Error desconocido',
+            status: 'error',
+            duration: 9000,
+            isClosable: true,
+          });
+        }
+      }
+    );
+
+    setTimeout(() => {
+      getQueue();
+    }, 5000);
+  };
+
+  const getMyDepartment = async () => {
+    await fetch(
+      `/api/departments/getDepartment?department_id=${myServicePoint.department}`
+    ).then(async (res) => {
+      const data = await res.json();
+
+      if (res.status == 200) {
+        setDepartment(data.department_data);
       }
     });
   };
@@ -163,9 +238,21 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   useEffect(() => {
     if (myServicePoint != null) {
+      getMyDepartment();
       getMyTurn();
     }
   }, [myServicePoint]);
+
+  useEffect(() => {
+    if (department != null) {
+      getQueue();
+    }
+  }, [department]);
+
+  // - If the user is not logged in, redirect to /login
+  if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
+    return <div>Redirecting...</div>;
+  }
 
   return (
     <>
@@ -182,7 +269,15 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         {myServicePoint == null ? (
           <>Cargando...</>
         ) : myServicePoint == 'no asignado' ? (
-          <>Punto de servicio no asignado</>
+          <>
+            No le ha sido asignado un punto de servicio, comuniquese con un
+            administrador
+          </>
+        ) : myServicePoint == 'no disponible' ? (
+          <>
+            Su punto de servicio esta inhabilitado, comuniquese con un
+            administrador
+          </>
         ) : (
           <>
             Gestionar mi punto de servicio {myServicePoint.name}
@@ -195,7 +290,26 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
                 <>{`Atendiendo turno: ${myTurn.turn}`}</>
               )}
             </Box>
-            <Box>Mostrar turnos siguientes</Box>
+            <Box>
+              Fila de turnos:{' '}
+              <Box>
+                {queue == null ? (
+                  <>Cargando...</>
+                ) : queue == '404' ? (
+                  <>No hay turnos en la fila</>
+                ) : (
+                  <>
+                    {queue.map((turn: any) => {
+                      return (
+                        <>
+                          {turn.status == 'pending' ? <>{turn.turn}</> : <></>}
+                        </>
+                      );
+                    })}
+                  </>
+                )}
+              </Box>
+            </Box>
             {/* // ---------- ABRIR/CERRAR CAJA ---------- // */}
             <Box>
               {myServicePointStatus == null ? (
@@ -229,7 +343,17 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
                 <></>
               ) : myServicePointStatus == 'open' ? (
                 <>
-                  <Button onClick={getATurn}>Atender un turno</Button>
+                  {loadingButton ? (
+                    <>
+                      <Button>
+                        <Spinner size={'sm'} mx={5} />
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button onClick={getATurn}>Atender Turno</Button>
+                    </>
+                  )}
                 </>
               ) : (
                 <></>

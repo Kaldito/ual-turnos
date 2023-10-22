@@ -26,8 +26,6 @@ export default async function handler(
       status: 'pending',
     });
 
-    console.log(queue);
-
     if (!queue || queue.length === 0) {
       return res.status(404).json({ message: 'No hay turnos en espera' });
     }

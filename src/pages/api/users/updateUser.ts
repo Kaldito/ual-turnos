@@ -60,8 +60,6 @@ export default async function handler(
     } else {
       await User.findByIdAndUpdate(user_id, changes);
 
-      console.log('Pase esto');
-
       res.status(200).json({ message: 'Usuario actualizado correctamente' });
     }
   } catch (error) {
