@@ -25,8 +25,6 @@ export const getServerSideProps = withSessionSsr(
       departments = '404';
     }
 
-    console.log(departments);
-
     if (!user) {
       return {
         props: { user: null, departments: departments },

@@ -1,14 +1,30 @@
+import LoaderSpinner from '@/components/loaderSpinner';
+import connectDB from '@/models/mongoConnection';
+import Department from '@/models/mongoSchemas/departmentSchema';
 import { Box, Button, useToast } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 
 interface TakeTurnProps {
   department: string;
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  await connectDB();
+
   const department = context.params?.department;
+
+  const validateDepartment = await Department.findOne({
+    name: department,
+  });
+
+  if (!validateDepartment) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: { department: department },
@@ -20,6 +36,8 @@ export default function TakeTurn({ department }: TakeTurnProps) {
   // --------- HOOKS --------- //
   const router = useRouter();
   const toast = useToast();
+
+  const [queue, setQueue] = useState<any>(null);
 
   // --------- SACAR UN TURNO --------- //
   const takeTurn = async () => {
@@ -57,6 +75,47 @@ export default function TakeTurn({ department }: TakeTurnProps) {
     });
   };
 
+  // --------- OBTENER LA FILA DE TURNOS --------- //
+  const getQueue = async () => {
+    await fetch(`/api/getQueue?department_name=${department}`).then(
+      async (res) => {
+        const data = await res.json();
+
+        if (res.status == 200) {
+          setQueue(data.queue_data);
+        } else if (res.status == 404) {
+          setQueue('404');
+        } else if (res.status == 400) {
+          toast({
+            title: 'Error al consultar la fila',
+            description: data.message,
+            variant: 'left-accent',
+            status: 'error',
+            duration: 9000,
+            isClosable: true,
+          });
+        } else {
+          toast({
+            title: 'Error al consultar la fila',
+            description: 'Error desconocido',
+            status: 'error',
+            duration: 9000,
+            isClosable: true,
+          });
+        }
+      }
+    );
+
+    setTimeout(() => {
+      getQueue();
+    }, 5000);
+  };
+
+  // --------- USE EFFECT --------- //
+  useEffect(() => {
+    getQueue();
+  }, []);
+
   return (
     <>
       <Head>
@@ -68,7 +127,22 @@ export default function TakeTurn({ department }: TakeTurnProps) {
 
       <main>
         Sacar un turno - {department}
-        <Box>Aqui se va a mostrar las personas que hay en la fila</Box>
+        <Box>
+          {queue == null ? (
+            <>
+              <LoaderSpinner size="xl" paddingY="2rem" />
+            </>
+          ) : queue == '404' ? (
+            <>No hay fila</>
+          ) : (
+            <>
+              Personas en la fila: {queue.length}
+              {queue.map((turn: any) => {
+                return <Box key={turn.turn_id}>{turn.turn}</Box>;
+              })}
+            </>
+          )}
+        </Box>
         <Box>
           <Button
             onClick={() => {
