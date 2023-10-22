@@ -184,177 +184,182 @@ export default function MyUserCard({ user, reloadUser }: MyUserCardProps) {
   }, [email]);
 
   return (
-    <Center py={6}>
+    <Center py={6} h={'100%'}>
       <Box
         maxW={'320px'}
         w={'full'}
+        h={'100%'}
         bg={useColorModeValue('white', 'gray.900')}
         boxShadow={'2xl'}
         rounded={'lg'}
         p={6}
         textAlign={'center'}
       >
-        <Avatar
-          size={'xl'}
-          bg={'green.400'}
-          icon={<AiOutlineUser />}
-          src="https://bit.ly/broken-link"
-          mb={4}
-          pos={'relative'}
-        />
+        <Center h={'100%'} w={'100%'}>
+          <Box w={'100%'}>
+            <Avatar
+              size={'xl'}
+              bg={'green.400'}
+              icon={<AiOutlineUser />}
+              src="https://bit.ly/broken-link"
+              mb={4}
+              pos={'relative'}
+            />
 
-        <Heading fontSize={'2xl'} fontFamily={'body'}>
-          Mi Usuario
-        </Heading>
+            <Heading fontSize={'2xl'} fontFamily={'body'}>
+              Mi Usuario
+            </Heading>
 
-        <Text fontWeight={600} color={'gray.500'} mb={4}>
-          {user.username} - {user.rol}
-        </Text>
+            <Text fontWeight={600} color={'gray.500'} mb={4}>
+              {user.username} - {user.rol}
+            </Text>
 
-        {/* // - NOMBRE DE USUARIO - // */}
-        {user.rol == 'admin' ? null : (
-          <>
+            {/* // - NOMBRE DE USUARIO - // */}
+            {user.rol == 'admin' ? null : (
+              <>
+                <FormControl mt={3}>
+                  <Input
+                    type="text"
+                    size={'sm'}
+                    placeholder="Nombre de usuario"
+                    value={isEditing ? username : usernamePreview}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={user.rol == 'superadmin' ? !isEditing : true}
+                  />
+                </FormControl>
+              </>
+            )}
+
+            {/* // - CORREO - // */}
             <FormControl mt={3}>
-              <Input
-                type="text"
-                size={'sm'}
-                placeholder="Nombre de usuario"
-                value={isEditing ? username : usernamePreview}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={user.rol == 'superadmin' ? !isEditing : true}
-              />
+              <InputGroup>
+                <Input
+                  type="text"
+                  size={'sm'}
+                  placeholder="Correo"
+                  value={isEditing ? email : emailPreview}
+                  isInvalid={!isValidEmail}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
+                  disabled={!isEditing}
+                />
+
+                <InputRightElement pb={2}>
+                  <Box color={'red.400'}>
+                    {isValidEmail ? (
+                      <></>
+                    ) : (
+                      <>
+                        <CgDanger />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
             </FormControl>
-          </>
-        )}
 
-        {/* // - CORREO - // */}
-        <FormControl mt={3}>
-          <InputGroup>
-            <Input
-              type="text"
-              size={'sm'}
-              placeholder="Correo"
-              value={isEditing ? email : emailPreview}
-              isInvalid={!isValidEmail}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="off"
-              disabled={!isEditing}
-            />
+            {/* // - CONTRASEÑA - // */}
+            <FormControl mt={3}>
+              <InputGroup>
+                <Input
+                  type={passwordType}
+                  size={'sm'}
+                  placeholder="Cambiar contraseña"
+                  value={password}
+                  autoComplete="new-password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={!isEditing}
+                />
 
-            <InputRightElement pb={2}>
-              <Box color={'red.400'}>
-                {isValidEmail ? (
-                  <></>
-                ) : (
-                  <>
-                    <CgDanger />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
+                <InputRightElement pb={2}>
+                  <Box
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setHide(!hide);
+                    }}
+                  >
+                    {hide ? (
+                      <>
+                        <AiFillEyeInvisible />
+                      </>
+                    ) : (
+                      <>
+                        <AiFillEye />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
 
-        {/* // - CONTRASEÑA - // */}
-        <FormControl mt={3}>
-          <InputGroup>
-            <Input
-              type={passwordType}
-              size={'sm'}
-              placeholder="Cambiar contraseña"
-              value={password}
-              autoComplete="new-password"
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={!isEditing}
-            />
+            <Stack mt={8} direction={'row'} spacing={4}>
+              {isEditing ? (
+                <>
+                  {/* // - BOTON PARA CANCELAR - // */}
+                  <Button
+                    flex={1}
+                    fontSize={'sm'}
+                    rounded={'xl'}
+                    _focus={{
+                      bg: 'gray.200',
+                    }}
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
 
-            <InputRightElement pb={2}>
-              <Box
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  setHide(!hide);
-                }}
-              >
-                {hide ? (
-                  <>
-                    <AiFillEyeInvisible />
-                  </>
-                ) : (
-                  <>
-                    <AiFillEye />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
-
-        <Stack mt={8} direction={'row'} spacing={4}>
-          {isEditing ? (
-            <>
-              {/* // - BOTON PARA CANCELAR - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                _focus={{
-                  bg: 'gray.200',
-                }}
-                onClick={() => {
-                  setIsEditing(false);
-                }}
-              >
-                Cancelar
-              </Button>
-
-              {/* // - BOTON PARA GUARDAR - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                bg={'green.500'}
-                color={'white'}
-                boxShadow={
-                  '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
-                }
-                _hover={{
-                  bg: 'green.600',
-                }}
-                _focus={{
-                  bg: 'green.6  00',
-                }}
-                onClick={updateUser}
-              >
-                Guardar
-              </Button>
-            </>
-          ) : (
-            <>
-              {/* // - BOTON PARA HABILITAR EDICION - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                bg={'blue.400'}
-                color={'white'}
-                boxShadow={
-                  '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
-                }
-                _hover={{
-                  bg: 'blue.500',
-                }}
-                _focus={{
-                  bg: 'blue.500',
-                }}
-                onClick={() => {
-                  setIsEditing(true);
-                }}
-              >
-                Editar
-              </Button>
-            </>
-          )}
-        </Stack>
+                  {/* // - BOTON PARA GUARDAR - // */}
+                  <Button
+                    flex={1}
+                    fontSize={'sm'}
+                    rounded={'xl'}
+                    bg={'green.500'}
+                    color={'white'}
+                    boxShadow={
+                      '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
+                    }
+                    _hover={{
+                      bg: 'green.600',
+                    }}
+                    _focus={{
+                      bg: 'green.6  00',
+                    }}
+                    onClick={updateUser}
+                  >
+                    Guardar
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {/* // - BOTON PARA HABILITAR EDICION - // */}
+                  <Button
+                    flex={1}
+                    fontSize={'sm'}
+                    rounded={'xl'}
+                    bg={'blue.400'}
+                    color={'white'}
+                    boxShadow={
+                      '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
+                    }
+                    _hover={{
+                      bg: 'blue.500',
+                    }}
+                    _focus={{
+                      bg: 'blue.500',
+                    }}
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
+                  >
+                    Editar
+                  </Button>
+                </>
+              )}
+            </Stack>
+          </Box>
+        </Center>
       </Box>
     </Center>
   );

@@ -7,7 +7,7 @@ import { withSessionSsr } from '@/lib/auth/witSession';
 import useHasMounted from '@/lib/hasMounted';
 import connectDB from '@/models/mongoConnection';
 import ServicePoint from '@/models/mongoSchemas/servicePointScheme';
-import { Box, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Divider, Grid, GridItem, Heading } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -117,7 +117,20 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
 
         {/* PAGINA DE USUARIOS */}
         <Box px={3} py={4}>
-          <h1>Gestion de usuarios</h1>
+          <Box ps={4}>
+            <Heading as={'h1'} size={'lg'}>
+              Gestion de Usuarios
+            </Heading>
+          </Box>
+
+          <Box pt={4}>
+            <Divider
+              borderWidth={'1px'}
+              borderStyle={'solid'}
+              borderRadius={10}
+              borderColor={'green.500'}
+            />
+          </Box>
 
           <Grid templateColumns="repeat(4, 1fr)" gap={0}>
             {/* CARD PARA NUEVO USUARIO */}

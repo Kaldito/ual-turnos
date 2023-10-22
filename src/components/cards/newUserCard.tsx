@@ -183,8 +183,9 @@ export default function NewUserCard({
   }, [hide]);
 
   return (
-    <Center py={6}>
+    <Center py={6} h={'100%'}>
       <Box
+        h={'100%'}
         maxW={'320px'}
         w={'full'}
         bg={useColorModeValue('white', 'gray.900')}
@@ -193,157 +194,161 @@ export default function NewUserCard({
         p={6}
         textAlign={'center'}
       >
-        <Avatar
-          size={'xl'}
-          bg={'black'}
-          icon={<AiOutlinePlus />}
-          src="https://bit.ly/broken-link"
-          mb={4}
-          pos={'relative'}
-        />
-
-        <Heading fontSize={'2xl'} fontFamily={'body'}>
-          Nuevo Usuario
-        </Heading>
-
-        {/* // - NOMBRE DE USUARIO - // */}
-        <Box mt={3}>
-          <Input
-            type="text"
-            size={'sm'}
-            placeholder="Nombre de usuario"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            autoComplete="off"
-          />
-        </Box>
-
-        {/* // - CORREO - // */}
-        <Box mt={3}>
-          <InputGroup>
-            <Input
-              type="text"
-              size={'sm'}
-              placeholder="Correo"
-              value={email}
-              isInvalid={!isValidEmail}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="off"
+        <Center h={'100%'} w={'100%'}>
+          <Box w={'100%'}>
+            <Avatar
+              size={'xl'}
+              bg={'black'}
+              icon={<AiOutlinePlus />}
+              src="https://bit.ly/broken-link"
+              mb={4}
+              pos={'relative'}
             />
 
-            <InputRightElement pb={2}>
-              <Box color={'red.400'}>
-                {isValidEmail ? (
-                  <></>
-                ) : (
-                  <>
-                    <CgDanger />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </Box>
+            <Heading fontSize={'2xl'} fontFamily={'body'}>
+              Nuevo Usuario
+            </Heading>
 
-        {/* // - CONTRASEÑA - // */}
-        <Box mt={3}>
-          <InputGroup>
-            <Input
-              type={passwordType}
-              size={'sm'}
-              placeholder="Contraseña"
-              value={password}
-              autoComplete="new-password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            {/* // - NOMBRE DE USUARIO - // */}
+            <Box mt={3}>
+              <Input
+                type="text"
+                size={'sm'}
+                placeholder="Nombre de usuario"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="off"
+              />
+            </Box>
 
-            <InputRightElement pb={2}>
-              <Box
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  setHide(!hide);
-                }}
-              >
-                {hide ? (
-                  <>
-                    <AiFillEyeInvisible />
-                  </>
-                ) : (
-                  <>
-                    <AiFillEye />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </Box>
+            {/* // - CORREO - // */}
+            <Box mt={3}>
+              <InputGroup>
+                <Input
+                  type="text"
+                  size={'sm'}
+                  placeholder="Correo"
+                  value={email}
+                  isInvalid={!isValidEmail}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
+                />
 
-        {/* // - ROL - // */}
-        <Box mt={3}>
-          <Select
-            title="Selecciona tu Rol..."
-            size="sm"
-            value={rol}
-            onChange={(e) => setRol(e.target.value)}
-          >
-            <option value="">Selecciona un rol...</option>
-            {userRol == 'superadmin' ? (
-              <option value="admin">Administrador</option>
-            ) : null}
-            <option value="asesor">Asesor de Servicio</option>
-          </Select>
-        </Box>
+                <InputRightElement pb={2}>
+                  <Box color={'red.400'}>
+                    {isValidEmail ? (
+                      <></>
+                    ) : (
+                      <>
+                        <CgDanger />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
+            </Box>
 
-        {/* // - PUNTO DE SERVICIO - // */}
-        {rol == 'admin' ? null : (
-          <>
+            {/* // - CONTRASEÑA - // */}
+            <Box mt={3}>
+              <InputGroup>
+                <Input
+                  type={passwordType}
+                  size={'sm'}
+                  placeholder="Contraseña"
+                  value={password}
+                  autoComplete="new-password"
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <InputRightElement pb={2}>
+                  <Box
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setHide(!hide);
+                    }}
+                  >
+                    {hide ? (
+                      <>
+                        <AiFillEyeInvisible />
+                      </>
+                    ) : (
+                      <>
+                        <AiFillEye />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
+            </Box>
+
+            {/* // - ROL - // */}
             <Box mt={3}>
               <Select
+                title="Selecciona tu Rol..."
                 size="sm"
-                value={servicePoint}
-                onChange={(e) => setServicePoint(e.target.value)}
+                value={rol}
+                onChange={(e) => setRol(e.target.value)}
               >
-                <option value="">Punto de Servicio (opcional)</option>
-                {
-                  // - Mapear puntos de servicio
-                  servicePoints.map((servicePoint: any) => {
-                    return (
-                      <option
-                        key={`new-${servicePoint._id}`}
-                        value={servicePoint._id}
-                      >
-                        {servicePoint.name}
-                      </option>
-                    );
-                  })
-                }
+                <option value="">Selecciona un rol...</option>
+                {userRol == 'superadmin' ? (
+                  <option value="admin">Administrador</option>
+                ) : null}
+                <option value="asesor">Asesor de Servicio</option>
               </Select>
             </Box>
-          </>
-        )}
 
-        {/* // - BOTON DE AGREGAR - // */}
-        <Stack mt={3} direction={'row'} spacing={4}>
-          <Button
-            flex={1}
-            fontSize={'sm'}
-            rounded={'xl'}
-            onClick={createUser}
-            bg={'green.500'}
-            color={'white'}
-            boxShadow={
-              '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
-            }
-            _hover={{
-              bg: 'green.600',
-            }}
-            _focus={{
-              bg: 'green.600',
-            }}
-          >
-            Agregar
-          </Button>
-        </Stack>
+            {/* // - PUNTO DE SERVICIO - // */}
+            {rol == 'admin' ? null : (
+              <>
+                <Box mt={3}>
+                  <Select
+                    size="sm"
+                    value={servicePoint}
+                    onChange={(e) => setServicePoint(e.target.value)}
+                  >
+                    <option value="">Punto de Servicio (opcional)</option>
+                    {
+                      // - Mapear puntos de servicio
+                      servicePoints.map((servicePoint: any) => {
+                        return (
+                          <option
+                            key={`new-${servicePoint._id}`}
+                            value={servicePoint._id}
+                          >
+                            {servicePoint.name}
+                          </option>
+                        );
+                      })
+                    }
+                  </Select>
+                </Box>
+              </>
+            )}
+
+            {/* // - BOTON DE AGREGAR - // */}
+            <Stack mt={3} direction={'row'} spacing={4}>
+              <Button
+                flex={1}
+                fontSize={'sm'}
+                rounded={'xl'}
+                onClick={createUser}
+                bg={'green.500'}
+                color={'white'}
+                boxShadow={
+                  '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
+                }
+                _hover={{
+                  bg: 'green.600',
+                }}
+                _focus={{
+                  bg: 'green.600',
+                }}
+              >
+                Agregar
+              </Button>
+            </Stack>
+          </Box>
+        </Center>
       </Box>
     </Center>
   );

@@ -260,8 +260,9 @@ export default function UserCard({
   }, [email]);
 
   return (
-    <Center py={6}>
+    <Center py={6} h={'100%'}>
       <Box
+        h={'100%'}
         maxW={'320px'}
         w={'full'}
         bg={useColorModeValue('white', 'gray.900')}
@@ -270,266 +271,270 @@ export default function UserCard({
         p={6}
         textAlign={'center'}
       >
-        <Avatar
-          size={'xl'}
-          bg={'teal'}
-          name={user.username}
-          src="https://bit.ly/broken-link"
-          mb={4}
-          pos={'relative'}
-        />
-
-        {/* // - NOMBRE DE USUARIO - // */}
-        <Heading fontSize={'2xl'} fontFamily={'body'}>
-          {user.username}
-        </Heading>
-
-        {/* // - ROL - // */}
-        <Text fontWeight={600} color={'gray.500'} mb={4}>
-          {user.rol}
-        </Text>
-
-        {/* // - NOMBRE DE USUARIO - // */}
-        {myRol == 'admin' ? null : (
-          <>
-            <FormControl mt={3}>
-              <Input
-                type="text"
-                size={'sm'}
-                placeholder="Nombre de usuario"
-                value={isEditing ? username : usernamePreview}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="off"
-                disabled={myRol == 'superadmin' ? !isEditing : true}
-              />
-            </FormControl>
-          </>
-        )}
-
-        {/* // - CORREO - // */}
-        <FormControl mt={3}>
-          <InputGroup>
-            <Input
-              type="text"
-              size={'sm'}
-              placeholder="Correo"
-              value={isEditing ? email : emailPreview}
-              isInvalid={!isValidEmail}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="off"
-              disabled={!isEditing}
+        <Center h={'100%'} w={'100%'}>
+          <Box w={'100%'}>
+            <Avatar
+              size={'xl'}
+              bg={'teal'}
+              name={user.username}
+              src="https://bit.ly/broken-link"
+              mb={4}
+              pos={'relative'}
             />
 
-            <InputRightElement pb={2}>
-              <Box color={'red.400'}>
-                {isValidEmail ? (
-                  <></>
-                ) : (
-                  <>
-                    <CgDanger />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
+            {/* // - NOMBRE DE USUARIO - // */}
+            <Heading fontSize={'2xl'} fontFamily={'body'}>
+              {user.username}
+            </Heading>
 
-        {/* // - CONTRASEÑA - // */}
-        <FormControl mt={3}>
-          <InputGroup>
-            <Input
-              type={passwordType}
-              size={'sm'}
-              placeholder="Contraseña"
-              autoComplete="new-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={!isEditing}
-            />
+            {/* // - ROL - // */}
+            <Text fontWeight={600} color={'gray.500'} mb={4}>
+              {user.rol}
+            </Text>
 
-            <InputRightElement pb={2}>
-              <Box
-                style={{ cursor: 'pointer' }}
-                onClick={() => {
-                  setHide(!hide);
-                }}
-              >
-                {hide ? (
-                  <>
-                    <AiFillEyeInvisible />
-                  </>
-                ) : (
-                  <>
-                    <AiFillEye />
-                  </>
-                )}
-              </Box>
-            </InputRightElement>
-          </InputGroup>
-        </FormControl>
-
-        {/* // - ROL - // */}
-        {myRol == 'superadmin' ? (
-          <>
-            <FormControl mt={3}>
-              <Select
-                title="Selecciona tu Rol..."
-                size="sm"
-                value={rol}
-                onChange={(e) => setRol(e.target.value)}
-                disabled={!isEditing}
-              >
-                <option value="">Selecciona un rol...</option>
-                {myRol == 'superadmin' ? (
-                  <option value="admin">Administrador</option>
-                ) : null}
-                <option value="asesor">Asesor de Servicio</option>
-              </Select>
-            </FormControl>
-          </>
-        ) : null}
-
-        {/* // - PUNTO DE SERVICIO - // */}
-        {rol == 'admin' ? null : (
-          <>
-            <FormControl mt={3}>
-              <Select
-                size="sm"
-                value={servicePoint}
-                onChange={(e) => setServicePoint(e.target.value)}
-                disabled={!isEditing}
-              >
-                <option value="">Punto de Servicio (opcional)</option>
-                {
-                  // - Mapear puntos de servicio
-                  servicePoints.map((servicePoint: any) => {
-                    return (
-                      <option
-                        key={`new-${servicePoint._id}`}
-                        value={servicePoint._id}
-                      >
-                        {servicePoint.name}
-                      </option>
-                    );
-                  })
-                }
-              </Select>
-            </FormControl>
-          </>
-        )}
-
-        <Stack mt={8} direction={'row'} spacing={4}>
-          {isEditing ? (
-            <>
-              {/* // - BOTON PARA CANCELAR - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                _focus={{
-                  bg: 'gray.200',
-                }}
-                onClick={() => {
-                  setIsEditing(false);
-                }}
-              >
-                Cancelar
-              </Button>
-
-              {/* // - BOTON PARA GUARDAR - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                bg={'green.500'}
-                color={'white'}
-                boxShadow={
-                  '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
-                }
-                _hover={{
-                  bg: 'green.600',
-                }}
-                _focus={{
-                  bg: 'green.6  00',
-                }}
-                onClick={
-                  // - ACTUALIZAR USUARIO
-                  () => {
-                    updateUser();
-                  }
-                }
-              >
-                Guardar
-              </Button>
-            </>
-          ) : (
-            <>
-              {user.status == 'active' ? (
-                <>
-                  <DeactivateUserModal
-                    glow={glow}
-                    changeUserStatus={changeUserStatus}
-                    username={user.username}
-                    myRol={myRol}
-                    userRol={user.rol}
+            {/* // - NOMBRE DE USUARIO - // */}
+            {myRol == 'admin' ? null : (
+              <>
+                <FormControl mt={3}>
+                  <Input
+                    type="text"
+                    size={'sm'}
+                    placeholder="Nombre de usuario"
+                    value={isEditing ? username : usernamePreview}
+                    onChange={(e) => setUsername(e.target.value)}
+                    autoComplete="off"
+                    disabled={myRol == 'superadmin' ? !isEditing : true}
                   />
-                </>
-              ) : (
+                </FormControl>
+              </>
+            )}
+
+            {/* // - CORREO - // */}
+            <FormControl mt={3}>
+              <InputGroup>
+                <Input
+                  type="text"
+                  size={'sm'}
+                  placeholder="Correo"
+                  value={isEditing ? email : emailPreview}
+                  isInvalid={!isValidEmail}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
+                  disabled={!isEditing}
+                />
+
+                <InputRightElement pb={2}>
+                  <Box color={'red.400'}>
+                    {isValidEmail ? (
+                      <></>
+                    ) : (
+                      <>
+                        <CgDanger />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
+
+            {/* // - CONTRASEÑA - // */}
+            <FormControl mt={3}>
+              <InputGroup>
+                <Input
+                  type={passwordType}
+                  size={'sm'}
+                  placeholder="Contraseña"
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={!isEditing}
+                />
+
+                <InputRightElement pb={2}>
+                  <Box
+                    style={{ cursor: 'pointer' }}
+                    onClick={() => {
+                      setHide(!hide);
+                    }}
+                  >
+                    {hide ? (
+                      <>
+                        <AiFillEyeInvisible />
+                      </>
+                    ) : (
+                      <>
+                        <AiFillEye />
+                      </>
+                    )}
+                  </Box>
+                </InputRightElement>
+              </InputGroup>
+            </FormControl>
+
+            {/* // - ROL - // */}
+            {myRol == 'superadmin' ? (
+              <>
+                <FormControl mt={3}>
+                  <Select
+                    title="Selecciona tu Rol..."
+                    size="sm"
+                    value={rol}
+                    onChange={(e) => setRol(e.target.value)}
+                    disabled={!isEditing}
+                  >
+                    <option value="">Selecciona un rol...</option>
+                    {myRol == 'superadmin' ? (
+                      <option value="admin">Administrador</option>
+                    ) : null}
+                    <option value="asesor">Asesor de Servicio</option>
+                  </Select>
+                </FormControl>
+              </>
+            ) : null}
+
+            {/* // - PUNTO DE SERVICIO - // */}
+            {rol == 'admin' ? null : (
+              <>
+                <FormControl mt={3}>
+                  <Select
+                    size="sm"
+                    value={servicePoint}
+                    onChange={(e) => setServicePoint(e.target.value)}
+                    disabled={!isEditing}
+                  >
+                    <option value="">Punto de Servicio (opcional)</option>
+                    {
+                      // - Mapear puntos de servicio
+                      servicePoints.map((servicePoint: any) => {
+                        return (
+                          <option
+                            key={`new-${servicePoint._id}`}
+                            value={servicePoint._id}
+                          >
+                            {servicePoint.name}
+                          </option>
+                        );
+                      })
+                    }
+                  </Select>
+                </FormControl>
+              </>
+            )}
+
+            <Stack mt={8} direction={'row'} spacing={4}>
+              {isEditing ? (
                 <>
+                  {/* // - BOTON PARA CANCELAR - // */}
                   <Button
                     flex={1}
                     fontSize={'sm'}
                     rounded={'xl'}
-                    bg={'red.500'}
+                    _focus={{
+                      bg: 'gray.200',
+                    }}
+                    onClick={() => {
+                      setIsEditing(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+
+                  {/* // - BOTON PARA GUARDAR - // */}
+                  <Button
+                    flex={1}
+                    fontSize={'sm'}
+                    rounded={'xl'}
+                    bg={'green.500'}
+                    color={'white'}
+                    boxShadow={
+                      '0px 1px 25px -5px rgb(0 0 0 / 48%), 0 10px 10px -5px rgb(0 0 0 / 43%)'
+                    }
+                    _hover={{
+                      bg: 'green.600',
+                    }}
+                    _focus={{
+                      bg: 'green.6  00',
+                    }}
+                    onClick={
+                      // - ACTUALIZAR USUARIO
+                      () => {
+                        updateUser();
+                      }
+                    }
+                  >
+                    Guardar
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {user.status == 'active' ? (
+                    <>
+                      <DeactivateUserModal
+                        glow={glow}
+                        changeUserStatus={changeUserStatus}
+                        username={user.username}
+                        myRol={myRol}
+                        userRol={user.rol}
+                      />
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        flex={1}
+                        fontSize={'sm'}
+                        rounded={'xl'}
+                        bg={'red.500'}
+                        color={'white'}
+                        boxShadow={
+                          '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
+                        }
+                        _hover={{
+                          bg: 'red.400',
+                        }}
+                        _focus={{
+                          bg: 'red.400',
+                        }}
+                        onClick={
+                          // - CAMBIAR ESTADO DEL USUARIO
+                          () => {
+                            if (myRol == 'admin' && user.rol == 'admin') return;
+
+                            changeUserStatus('active');
+                          }
+                        }
+                      >
+                        Inactivo
+                      </Button>
+                    </>
+                  )}
+
+                  {/* // - BOTON PARA HABILITAR EDICION - // */}
+                  <Button
+                    flex={1}
+                    fontSize={'sm'}
+                    rounded={'xl'}
+                    bg={'blue.400'}
                     color={'white'}
                     boxShadow={
                       '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
                     }
                     _hover={{
-                      bg: 'red.400',
+                      bg: 'blue.500',
                     }}
                     _focus={{
-                      bg: 'red.400',
+                      bg: 'blue.500',
                     }}
-                    onClick={
-                      // - CAMBIAR ESTADO DEL USUARIO
-                      () => {
-                        if (myRol == 'admin' && user.rol == 'admin') return;
-
-                        changeUserStatus('active');
-                      }
-                    }
+                    onClick={() => {
+                      setIsEditing(true);
+                    }}
                   >
-                    Inactivo
+                    Editar
                   </Button>
                 </>
               )}
-
-              {/* // - BOTON PARA HABILITAR EDICION - // */}
-              <Button
-                flex={1}
-                fontSize={'sm'}
-                rounded={'xl'}
-                bg={'blue.400'}
-                color={'white'}
-                boxShadow={
-                  '0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)'
-                }
-                _hover={{
-                  bg: 'blue.500',
-                }}
-                _focus={{
-                  bg: 'blue.500',
-                }}
-                onClick={() => {
-                  setIsEditing(true);
-                }}
-              >
-                Editar
-              </Button>
-            </>
-          )}
-        </Stack>
+            </Stack>
+          </Box>
+        </Center>
       </Box>
     </Center>
   );
