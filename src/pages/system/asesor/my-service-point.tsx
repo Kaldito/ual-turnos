@@ -179,6 +179,10 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   // ------- OBTENER MI TURNO ------- //
   const getMyTurn = async () => {
+    if (department != null) {
+      getQueue();
+    }
+
     await fetch(
       `/api/turns/getMyTurn?service_point_id=${myServicePoint._id}`
     ).then(async (res) => {

@@ -17,7 +17,7 @@ export default async function handler(
 
     const servicePoints = await ServicePoint.find({
       department: department_id,
-    }).sort({ createdAt: -1 });
+    });
 
     if (!servicePoints || servicePoints.length == 0) {
       return res
