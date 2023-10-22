@@ -19,7 +19,13 @@ export const getServerSideProps = withSessionSsr(
       createdAt: -1,
     });
 
-    const departments = JSON.parse(JSON.stringify(departmentsFetching));
+    let departments = JSON.parse(JSON.stringify(departmentsFetching));
+
+    if (departments.length == 0) {
+      departments = '404';
+    }
+
+    console.log(departments);
 
     if (!user) {
       return {
@@ -51,17 +57,25 @@ export default function Home({ user, departments }: HomeProps) {
         <h1>Selecciona un departamento</h1>
 
         <Box>
-          {departments.map((department: any) => (
-            <Box key={department._id}>
-              <Button
-                onClick={() => {
-                  router.push(`/take-turn/${department.name}`);
-                }}
-              >
-                {department.name}
-              </Button>
-            </Box>
-          ))}
+          {departments == '404' ? (
+            <>
+              <p>No hay departamentos</p>
+            </>
+          ) : (
+            <>
+              {departments.map((department: any) => (
+                <Box key={department._id}>
+                  <Button
+                    onClick={() => {
+                      router.push(`/take-turn/${department.name}`);
+                    }}
+                  >
+                    {department.name}
+                  </Button>
+                </Box>
+              ))}
+            </>
+          )}
         </Box>
       </main>
     </>
