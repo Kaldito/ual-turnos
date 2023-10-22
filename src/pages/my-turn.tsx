@@ -1,20 +1,38 @@
+import connectDB from '@/models/mongoConnection';
+import Turn from '@/models/mongoSchemas/turnScheme';
+import { Box } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 interface TakeTurnProps {
-  turn_id: string;
+  turn_data: any;
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
+  await connectDB();
+
   const turn_id = context.query.turn_id;
 
+  const turnFetching = await Turn.findOne({
+    _id: turn_id,
+    $or: [{ status: 'pending' }, { status: 'attending' }],
+  });
+
+  const turn = JSON.parse(JSON.stringify(turnFetching));
+
+  if (!turn) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
-    props: { turn_id: turn_id },
+    props: { turn_data: turn },
   };
 }
 
-export default function TakeTurn({ turn_id }: TakeTurnProps) {
+export default function TakeTurn({ turn_data }: TakeTurnProps) {
   // - Esta pagina sera donde los usuarios sacaran sus turnos
   // --------- HOOKS --------- //
   const router = useRouter();
@@ -28,7 +46,10 @@ export default function TakeTurn({ turn_id }: TakeTurnProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>Tu turno : {turn_id}</main>
+      <main>
+        Tu turno : {turn_data.turn}{' '}
+        <Box>id: {turn_data._id.slice(turn_data._id.length - 5)}</Box>
+      </main>
     </>
   );
 }
