@@ -63,6 +63,7 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   const getMyServicePoint = async (getType: string) => {
     // - getType puede ser servicePoint o servicePointStatus
     let available = true;
+    let canTakeTurn = true;
 
     if (myUser.servicePoint == undefined || myUser.servicePoint == null) {
       setMyServicePoint('no asignado');
@@ -80,18 +81,26 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
         } else if (getType == 'servicePointStatus') {
           setMyServicePointStatus(data.service_point_data.status);
         }
+
+        if (data.service_point_data.status == 'closed') {
+          canTakeTurn = false;
+        }
       } else if (res.status == 404) {
         setMyServicePoint('no disponible');
         available = false;
       }
     });
 
+    if (getType == 'servicePointStatus') {
+      return canTakeTurn;
+    }
+
     return available;
   };
 
   // ------- CAMBIAR EL ESTADO DEL PUNTO DE SERVICIO ------- //
   const changeServicePointStatus = async (status: string) => {
-    let available = await getMyServicePoint('servicePointStatus');
+    let available = await getMyServicePoint('servicePoint');
 
     if (!available) {
       return;
@@ -126,7 +135,21 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   const getATurn = async () => {
     setLoadingButton(true);
 
-    let available = await getMyServicePoint('servicePointStatus');
+    let available = await getMyServicePoint('servicePoint');
+    let isOpen = await getMyServicePoint('servicePointStatus');
+
+    if (!isOpen) {
+      toast({
+        title: 'El punto de servicio ha sido cerrado por otro asesor.',
+        status: 'error',
+        duration: 3000,
+        isClosable: true,
+      });
+
+      setLoadingButton(false);
+
+      return;
+    }
 
     if (!available) {
       return;
@@ -250,7 +273,7 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   }, [department]);
 
   // - If the user is not logged in, redirect to /login
-  if (!user || (user.rol != 'admin' && user.rol != 'superadmin')) {
+  if (!user || user.rol != 'asesor') {
     return <div>Redirecting...</div>;
   }
 

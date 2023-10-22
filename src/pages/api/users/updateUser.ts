@@ -49,6 +49,22 @@ export default async function handler(
       }
     }
 
+    if (changes.servicePoint) {
+      const validateServicePoint = await User.findOne({
+        servicePoint: changes.servicePoint,
+        status: 'open',
+      });
+
+      if (validateServicePoint) {
+        return res
+          .status(400)
+          .json({
+            message:
+              'El punto se encuentra abierto, favor de cerrarlo para poder actualizar al usuario.',
+          });
+      }
+    }
+
     if (changes.password) {
       bcrypt.hash(changes.password, 10, async function (err, hash) {
         changes.password = hash;
