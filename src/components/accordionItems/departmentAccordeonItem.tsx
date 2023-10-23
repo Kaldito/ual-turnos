@@ -145,7 +145,7 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
             <AccordionIcon me={3} />
 
             {/* // - NOMBRE DEL DEPARTAMENTO - // */}
-            <Box as="span" flex="1" textAlign="left">
+            <Box as="span" flex="1" textAlign="left" fontWeight={'bold'}>
               {department.name}{' '}
               {!department.available ? (
                 <>

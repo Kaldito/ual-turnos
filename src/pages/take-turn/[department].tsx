@@ -18,6 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const validateDepartment = await Department.findOne({
     name: department,
+    available: true,
   });
 
   if (!validateDepartment) {

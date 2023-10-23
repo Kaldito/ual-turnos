@@ -6,9 +6,12 @@ import {
   Accordion,
   Box,
   Button,
+  Center,
   Divider,
+  Flex,
   FormControl,
   FormLabel,
+  Heading,
   Input,
   Popover,
   PopoverArrow,
@@ -17,6 +20,7 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
+  Spacer,
   Textarea,
   useToast,
 } from '@chakra-ui/react';
@@ -190,77 +194,96 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
       <main>
         <NavBar rol={user.rol} name={user.username} />
 
-        {/* // ---------- SECCION DE AGREGAR Y BUSQUEDA ---------- // */}
+        {/* HEADER DE LA PAGINA */}
         <Box>
-          <h1>Gestion de Departamentos</h1>
+          <Box h={'70px'} w={'100%'} gap={0}>
+            <Flex h={'100%'}>
+              <Center>
+                <Heading as={'h1'} fontSize={'25px'} fontWeight={'bold'} pl={6}>
+                  Gestion de Departamentos
+                </Heading>
+              </Center>
 
-          {/* // ---------- AGREGAR DEPARTAMENTO ---------- // */}
-          <Popover>
-            {/* // - Boton para agregar departamento */}
-            <PopoverTrigger>
-              <Button colorScheme="blue" gap={3}>
-                <AiOutlinePlus />
-                Agregar Departamento
-              </Button>
-            </PopoverTrigger>
+              <Spacer />
 
-            {/* // - Formulario para agregar departamento */}
-            <PopoverContent>
-              <PopoverArrow />
+              <Center pe={6}>
+                {/* // ---------- AGREGAR DEPARTAMENTO ---------- // */}
+                <Popover>
+                  {/* // - Boton para agregar departamento */}
+                  <PopoverTrigger>
+                    <Button colorScheme="blue" gap={3}>
+                      <AiOutlinePlus />
+                      Agregar Departamento
+                    </Button>
+                  </PopoverTrigger>
 
-              <PopoverCloseButton />
+                  {/* // - Formulario para agregar departamento */}
+                  <PopoverContent>
+                    <PopoverArrow />
 
-              <PopoverHeader fontWeight={'bold'}>
-                Nuevo Departamento
-              </PopoverHeader>
+                    <PopoverCloseButton />
 
-              <PopoverBody>
-                {/* // - NOMBRE DEL DEPARTAMENTO */}
-                <FormControl mb={3}>
-                  <FormLabel>
-                    Nombre del Departamento:
-                    <span style={{ color: 'red' }}>*</span>
-                  </FormLabel>
+                    <PopoverHeader fontWeight={'bold'}>
+                      Nuevo Departamento
+                    </PopoverHeader>
 
-                  <Input
-                    type="text"
-                    value={newDepartmentName}
-                    onChange={(e) => setNewDepartmentName(e.target.value)}
-                    autoComplete="off"
-                  />
-                </FormControl>
+                    <PopoverBody>
+                      {/* // - NOMBRE DEL DEPARTAMENTO */}
+                      <FormControl mb={3}>
+                        <FormLabel>
+                          Nombre del Departamento:
+                          <span style={{ color: 'red' }}>*</span>
+                        </FormLabel>
 
-                {/* // - DESCRIPCION DEL DEPARTAMENTO */}
-                <FormControl mb={3}>
-                  <FormLabel>
-                    Descripcion:<span style={{ color: 'red' }}>*</span>
-                  </FormLabel>
+                        <Input
+                          type="text"
+                          value={newDepartmentName}
+                          onChange={(e) => setNewDepartmentName(e.target.value)}
+                          autoComplete="off"
+                        />
+                      </FormControl>
 
-                  <Textarea
-                    value={newDepartmentDescription}
-                    onChange={(e) =>
-                      setNewDepartmentDescription(e.target.value)
-                    }
-                  />
-                </FormControl>
+                      {/* // - DESCRIPCION DEL DEPARTAMENTO */}
+                      <FormControl mb={3}>
+                        <FormLabel>
+                          Descripcion:<span style={{ color: 'red' }}>*</span>
+                        </FormLabel>
 
-                {/* // - BOTON PARA AGREGAR DEPARTAMENTO */}
-                <Button
-                  w={'100%'}
-                  colorScheme="green"
-                  onClick={createDepartment}
-                >
-                  Agregar
-                </Button>
-              </PopoverBody>
-            </PopoverContent>
-          </Popover>
+                        <Textarea
+                          value={newDepartmentDescription}
+                          onChange={(e) =>
+                            setNewDepartmentDescription(e.target.value)
+                          }
+                        />
+                      </FormControl>
+
+                      {/* // - BOTON PARA AGREGAR DEPARTAMENTO */}
+                      <Button
+                        w={'100%'}
+                        colorScheme="green"
+                        onClick={createDepartment}
+                      >
+                        Agregar
+                      </Button>
+                    </PopoverBody>
+                  </PopoverContent>
+                </Popover>
+              </Center>
+            </Flex>
+          </Box>
+
+          <Box pt={2} px={3}>
+            <Divider
+              borderWidth={'1px'}
+              borderStyle={'solid'}
+              borderRadius={10}
+              borderColor={'green.500'}
+            />
+          </Box>
         </Box>
 
-        <Divider my={4} />
-
         {/* // ---------- LISTA DE DEPARTAMENTOS ---------- // */}
-        <Box>
+        <Box pt={6}>
           {departments == null ? (
             <>
               <LoaderSpinner paddingY="15rem" size="xl" />

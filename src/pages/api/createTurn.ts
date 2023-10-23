@@ -19,7 +19,19 @@ export default async function handler(
 
     const { department_name } = req.body;
 
-    const department = await Department.findOne({ name: department_name });
+    const department = await Department.findOne({
+      name: department_name,
+      available: true,
+    });
+
+    if (!department) {
+      res.status(400).json({
+        message:
+          'El departamento se encuentra inhabilitado, por favor intenta más tarde',
+      });
+
+      return;
+    }
 
     const validateDepartment = await ServicePoint.findOne({
       department: department._id,

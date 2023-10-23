@@ -15,9 +15,11 @@ export const getServerSideProps = withSessionSsr(
     await connectDB();
 
     const user = req.session.user;
-    const departmentsFetching = await Department.find({}).sort({
-      createdAt: -1,
-    });
+    const departmentsFetching = await Department.find({ available: true }).sort(
+      {
+        createdAt: -1,
+      }
+    );
 
     let departments = JSON.parse(JSON.stringify(departmentsFetching));
 

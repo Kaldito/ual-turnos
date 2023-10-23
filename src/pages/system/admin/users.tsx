@@ -7,7 +7,15 @@ import { withSessionSsr } from '@/lib/auth/witSession';
 import useHasMounted from '@/lib/hasMounted';
 import connectDB from '@/models/mongoConnection';
 import ServicePoint from '@/models/mongoSchemas/servicePointScheme';
-import { Box, Divider, Grid, GridItem, Heading } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Divider,
+  Flex,
+  Grid,
+  GridItem,
+  Heading,
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -91,6 +99,7 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
     getMyUser();
   }, []);
 
+  // - Si mi usuario se actualiza, actualizar la pagina
   useEffect(() => {
     if (myUser) {
       getUsers();
@@ -115,15 +124,19 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
       <main>
         <NavBar rol={user.rol} name={user.username} />
 
-        {/* PAGINA DE USUARIOS */}
-        <Box px={3} py={4}>
-          <Box ps={4}>
-            <Heading as={'h1'} size={'lg'}>
-              Gestion de Usuarios
-            </Heading>
+        {/* HEADER DE LA PAGINA */}
+        <Box>
+          <Box h={'70px'} w={'100%'} gap={0}>
+            <Flex h={'100%'}>
+              <Center>
+                <Heading as={'h1'} fontSize={'25px'} fontWeight={'bold'} pl={6}>
+                  Gestion de Usuarios
+                </Heading>
+              </Center>
+            </Flex>
           </Box>
 
-          <Box pt={4}>
+          <Box pt={2} px={3}>
             <Divider
               borderWidth={'1px'}
               borderStyle={'solid'}
@@ -131,7 +144,10 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
               borderColor={'green.500'}
             />
           </Box>
+        </Box>
 
+        {/* PAGINA DE USUARIOS */}
+        <Box px={3} py={2}>
           <Grid templateColumns="repeat(4, 1fr)" gap={0}>
             {/* CARD PARA NUEVO USUARIO */}
             <GridItem>

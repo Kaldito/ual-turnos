@@ -19,6 +19,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 
   const validateDepartment = await Department.findOne({
     name: department,
+    available: true,
   });
 
   if (!validateDepartment) {
@@ -33,7 +34,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 }
 
 export default function TakeTurn({ department }: TakeTurnProps) {
-  // - Esta pagina sera donde los usuarios sacaran sus turnos
   // --------- HOOKS --------- //
   const router = useRouter();
   const toast = useToast();
@@ -77,6 +77,7 @@ export default function TakeTurn({ department }: TakeTurnProps) {
     }, 5000);
   };
 
+  // --------- OBTENER LOS PUNTOS DE SERVICIO --------- //
   const getServicePoints = async () => {
     await fetch(
       `/api/servicePoints/getDepartmentServicePoints?department_id=${department._id}`
