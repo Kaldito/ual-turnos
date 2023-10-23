@@ -59,6 +59,29 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
     });
   };
 
+  // ------- VALIDAR USUARIO ------- //
+  const validateUser = async () => {
+    let canProceed = true;
+
+    await fetch(`/api/users/getUser?user_id=${user._id}`).then(async (res) => {
+      if (res.status == 200) {
+        const data = await res.json();
+
+        // - Si el rol del usuario fue actualizado cerrar sesion
+        if (
+          data.user_data.rol != user.rol ||
+          data.user_data.status == 'inactive'
+        ) {
+          canProceed = false;
+          await fetch('/api/logout');
+          router.push('/login');
+        }
+      }
+    });
+
+    return canProceed;
+  };
+
   // ------- OBTENER MI PUNTO DE SERVICIO ------- //
   const getMyServicePoint = async (getType: string) => {
     // - getType puede ser servicePoint o servicePointStatus
@@ -100,6 +123,12 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
 
   // ------- CAMBIAR EL ESTADO DEL PUNTO DE SERVICIO ------- //
   const changeServicePointStatus = async (status: string) => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     let available = await getMyServicePoint('servicePoint');
 
     if (!available) {
@@ -134,6 +163,12 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
   // ------- OBTENER UN TURNO ------- //
   const getATurn = async () => {
     setLoadingButton(true);
+
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
 
     let available = await getMyServicePoint('servicePoint');
     let isOpen = await getMyServicePoint('servicePointStatus');
@@ -329,7 +364,13 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
                     {queue.map((turn: any) => {
                       return (
                         <>
-                          {turn.status == 'pending' ? <>{turn.turn}</> : <></>}
+                          <Box>
+                            {turn.status == 'pending' ? (
+                              <>{turn.turn}</>
+                            ) : (
+                              <></>
+                            )}
+                          </Box>
                         </>
                       );
                     })}

@@ -21,6 +21,7 @@ export interface NewUserCardProps {
   servicePoints: any;
   reloadUsers: Function;
   setUsers: Function;
+  validateUser: Function;
 }
 
 export default function NewUserCard({
@@ -28,6 +29,7 @@ export default function NewUserCard({
   servicePoints,
   reloadUsers,
   setUsers,
+  validateUser,
 }: NewUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
@@ -44,6 +46,12 @@ export default function NewUserCard({
 
   // ------- FUNCION PARA CREAR USUARIO ------- //
   const createUser = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     // - Validar campos obligatorios
     if (username == '' || email == '' || password == '' || rol == '') {
       toast({

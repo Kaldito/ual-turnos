@@ -17,16 +17,23 @@ import { AiFillLock } from 'react-icons/ai';
 export interface IDeactivateServicePointModalProps {
   servicePoint_data: any;
   reloadServicePoints: Function;
+  validateUser: Function;
 }
 
 const DeactivateDepartmentModal: React.FC<
   IDeactivateServicePointModalProps
-> = ({ servicePoint_data, reloadServicePoints }) => {
+> = ({ servicePoint_data, reloadServicePoints, validateUser }) => {
   // ------- HOOKS ------- //
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   const deactivateServicePoint = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     await fetch(`/api/servicePoints/deactivateServicePoint`, {
       method: 'PUT',
       headers: {

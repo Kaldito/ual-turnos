@@ -56,6 +56,29 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
   const [myUser, setMyUser] = useState<any>(null);
   const [users, setUsers] = useState<any>(null);
 
+  // ------- VALIDAR USUARIO ------- //
+  const validateUser = async () => {
+    let canProceed = true;
+
+    await fetch(`/api/users/getUser?user_id=${user._id}`).then(async (res) => {
+      if (res.status == 200) {
+        const data = await res.json();
+
+        // - Si el rol del usuario fue actualizado cerrar sesion
+        if (
+          data.user_data.rol != user.rol ||
+          data.user_data.status == 'inactive'
+        ) {
+          canProceed = false;
+          await fetch('/api/logout');
+          router.push('/login');
+        }
+      }
+    });
+
+    return canProceed;
+  };
+
   // ------- OBTENER MI USUARIO ------- //
   const getMyUser = async () => {
     await fetch(`/api/users/getUser?user_id=${user._id}`).then(async (res) => {
@@ -157,6 +180,7 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
                   userRol={user.rol}
                   servicePoints={servicePoints}
                   reloadUsers={getUsers}
+                  validateUser={validateUser}
                 />
               ) : (
                 <LoaderSpinner paddingY="10rem" size="xl" />
@@ -166,7 +190,11 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
             {/* CARD PARA VER MI USUARIO */}
             <GridItem>
               {myUser ? (
-                <MyUserCard user={myUser} reloadUser={getMyUser} />
+                <MyUserCard
+                  user={myUser}
+                  reloadUser={getMyUser}
+                  validateUser={validateUser}
+                />
               ) : (
                 <LoaderSpinner paddingY="10rem" size="xl" />
               )}
@@ -183,6 +211,7 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
                         user={user}
                         servicePoints={servicePoints}
                         reloadUsers={getUsers}
+                        validateUser={validateUser}
                       />
                     </GridItem>
                   );

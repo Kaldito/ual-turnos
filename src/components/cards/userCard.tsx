@@ -25,6 +25,7 @@ export interface UserCardProps {
   user: any;
   servicePoints: any;
   reloadUsers: Function;
+  validateUser: Function;
 }
 
 export default function UserCard({
@@ -32,6 +33,7 @@ export default function UserCard({
   user,
   servicePoints,
   reloadUsers,
+  validateUser,
 }: UserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
@@ -65,7 +67,13 @@ export default function UserCard({
   );
 
   // ------- FUNCION PARA CAMBIAR ESTADO DEL USUARIO ------- //
-  const changeUserStatus = (status: string) => {
+  const changeUserStatus = async (status: string) => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     fetch(`/api/users/changeUserStatus`, {
       method: 'POST',
       headers: {
@@ -102,6 +110,12 @@ export default function UserCard({
 
   // ------- UPDATE USER ------- //
   const updateUser = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     // - Validar que el usuario o el correo no esten en blanco
     if (username == '' || email == '') {
       toast({

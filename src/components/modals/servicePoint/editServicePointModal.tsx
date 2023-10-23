@@ -21,11 +21,13 @@ import { BiEdit } from 'react-icons/bi';
 export interface IEditServicePointModalProps {
   servicePoint_data: any;
   reloadServicePoints: Function;
+  validateUser: Function;
 }
 
 const EditServicePointModal: React.FC<IEditServicePointModalProps> = ({
   servicePoint_data,
   reloadServicePoints,
+  validateUser,
 }) => {
   // ------- HOOKS ------- //
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -38,6 +40,12 @@ const EditServicePointModal: React.FC<IEditServicePointModalProps> = ({
 
   // ------- EDITAR DEPARTAMENTO ------- //
   const editServicePoint = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     if (servicePointName.trim() == '') {
       toast({
         title: 'Error al editar el punto de servicio.',

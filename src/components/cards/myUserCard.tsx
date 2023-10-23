@@ -20,9 +20,14 @@ import { CgDanger } from 'react-icons/cg';
 export interface MyUserCardProps {
   user: any;
   reloadUser: Function;
+  validateUser: Function;
 }
 
-export default function MyUserCard({ user, reloadUser }: MyUserCardProps) {
+export default function MyUserCard({
+  user,
+  reloadUser,
+  validateUser,
+}: MyUserCardProps) {
   // ------- HOOKS ------- //
   const toast = useToast();
 
@@ -39,6 +44,12 @@ export default function MyUserCard({ user, reloadUser }: MyUserCardProps) {
 
   // ------- UPDATE USER ------- //
   const updateUser = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     // - Validar que el usuario o el correo no esten en blanco
     if (username == '' || email == '') {
       toast({

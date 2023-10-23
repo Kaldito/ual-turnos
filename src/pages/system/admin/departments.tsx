@@ -81,8 +81,37 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
     });
   };
 
+  // ------- VALIDAR USUARIO ------- //
+  const validateUser = async () => {
+    let canProceed = true;
+
+    await fetch(`/api/users/getUser?user_id=${user._id}`).then(async (res) => {
+      if (res.status == 200) {
+        const data = await res.json();
+
+        // - Si el rol del usuario fue actualizado cerrar sesion
+        if (
+          data.user_data.rol != user.rol ||
+          data.user_data.status == 'inactive'
+        ) {
+          canProceed = false;
+          await fetch('/api/logout');
+          router.push('/login');
+        }
+      }
+    });
+
+    return canProceed;
+  };
+
   // ------- CREAR DEPARTAMENTO ------- //
   const createDepartment = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     // - Validar que el nombre del departamento no este vacio
     if (newDepartmentName.trim() == '') {
       toast({
@@ -298,6 +327,7 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
                     <DepartmentAccordeonItem
                       department={department}
                       reloadDepartments={getDepartments}
+                      validateUser={validateUser}
                     />
                   );
                 })}

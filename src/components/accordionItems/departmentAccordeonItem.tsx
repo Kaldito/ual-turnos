@@ -31,11 +31,13 @@ import NewServicePointModal from '../modals/servicePoint/newServicePointModal';
 export interface IDepartmentAccordeonItemProps {
   department: any;
   reloadDepartments: Function;
+  validateUser: Function;
 }
 
 const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
   department,
   reloadDepartments,
+  validateUser,
 }) => {
   // ------- HOOKS ------- //
   const toast = useToast();
@@ -45,6 +47,12 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
 
   // ------- ACTIVAR DEPARTAMENTO ------- //
   const activateDepartment = async () => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     await fetch(`/api/departments/activateDepartment`, {
       method: 'PUT',
       headers: {
@@ -81,6 +89,12 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
 
   // ------- ACTIVAR PUNTO DE SERVICIO ------- //
   const activateServicePoint = async (servicePoint: any) => {
+    const canProceed = await validateUser();
+
+    if (!canProceed) {
+      return;
+    }
+
     await fetch(`/api/servicePoints/activateServicePoint`, {
       method: 'PUT',
       headers: {
@@ -196,8 +210,15 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
                       {/* // - ACTIVAR DEPARTAMENTO - // */}
                       <MenuItem
                         icon={<AiFillUnlock />}
-                        onClick={(e) => {
+                        onClick={async (e) => {
                           e.stopPropagation();
+
+                          const canProceed = await validateUser();
+
+                          if (!canProceed) {
+                            return;
+                          }
+
                           activateDepartment();
                         }}
                         color={'green'}
@@ -287,6 +308,7 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
                                 <EditServicePointModal
                                   servicePoint_data={servicePoint}
                                   reloadServicePoints={getServicePoints}
+                                  validateUser={validateUser}
                                 />
 
                                 {department.available ? (
@@ -297,6 +319,7 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
                                         <DeactivateServicePointModal
                                           servicePoint_data={servicePoint}
                                           reloadServicePoints={getServicePoints}
+                                          validateUser={validateUser}
                                         />
                                       </>
                                     ) : (
@@ -305,8 +328,16 @@ const DepartmentAccordeonItem: React.FC<IDepartmentAccordeonItemProps> = ({
                                         <MenuItem
                                           icon={<AiFillUnlock />}
                                           color={'green'}
-                                          onClick={(e) => {
+                                          onClick={async (e) => {
                                             e.stopPropagation();
+
+                                            const canProceed =
+                                              await validateUser();
+
+                                            if (!canProceed) {
+                                              return;
+                                            }
+
                                             activateServicePoint(servicePoint);
                                           }}
                                         >
