@@ -1,7 +1,14 @@
 import LoaderSpinner from '@/components/loaderSpinner';
 import connectDB from '@/models/mongoConnection';
 import Department from '@/models/mongoSchemas/departmentSchema';
-import { Box, Button, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Heading,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -127,42 +134,77 @@ export default function TakeTurn({ department }: TakeTurnProps) {
       </Head>
 
       <main>
-        Sacar un turno - {department}
-        <Box>
-          {queue == null ? (
-            <>
-              <LoaderSpinner size="xl" paddingY="2rem" />
-            </>
-          ) : queue == '404' ? (
-            <>No hay fila</>
-          ) : (
-            <>
-              Personas en la fila: {queue.length}
-              {queue.map((turn: any) => {
-                return <Box key={turn.turn_id}>{turn.turn}</Box>;
-              })}
-            </>
-          )}
-        </Box>
-        <Box>
-          <Button
-            onClick={() => {
-              router.push('/');
-            }}
-          >
-            Cancelar
-          </Button>
+        <Center minH="100vh" flexDirection="column" bgColor="gray.100" py={6}>
+          <VStack spacing={5}>
+            <Heading as="h2" size="xl">
+              {department}
+            </Heading>
 
-          <Button onClick={takeTurn}>Sacar turno</Button>
+            <Box display="flex" gap={3}>
+              <Button
+                colorScheme="red"
+                onClick={() => {
+                  router.push('/');
+                }}
+              >
+                Cancelar
+              </Button>
 
-          <Button
-            onClick={() => {
-              router.push(`/see-turns/${department}`);
-            }}
-          >
-            Ver Turnos
-          </Button>
-        </Box>
+              <Button colorScheme="teal" onClick={takeTurn}>
+                Sacar turno
+              </Button>
+
+              <Button
+                variant="outline"
+                colorScheme="teal"
+                onClick={() => {
+                  router.push(`/see-turns/${department}`);
+                }}
+              >
+                Pantalla de Turnos
+              </Button>
+            </Box>
+
+            <Box
+              w="80%"
+              borderWidth="1px"
+              borderRadius="lg"
+              backgroundColor={'white'}
+              p={5}
+              boxShadow="lg"
+            >
+              {queue == null ? (
+                <>
+                  <LoaderSpinner size="xl" paddingY="2rem" />
+                </>
+              ) : queue == '404' ? (
+                <Center height="100px" textAlign={'center'}>
+                  No hay turnos de momento...
+                </Center>
+              ) : (
+                <>
+                  <Heading as="h4" size="md" mb={2} fontWeight={'medium'}>
+                    Personas delante: {queue.length}
+                  </Heading>
+
+                  {queue.map((turn: any) => {
+                    return (
+                      <Box
+                        key={turn.turn_id}
+                        textAlign={'center'}
+                        borderBottom="1px solid"
+                        borderColor="gray.200"
+                        p={2}
+                      >
+                        {turn.turn}
+                      </Box>
+                    );
+                  })}
+                </>
+              )}
+            </Box>
+          </VStack>
+        </Center>
       </main>
     </>
   );

@@ -1,7 +1,7 @@
 import { withSessionSsr } from '@/lib/auth/witSession';
 import connectDB from '@/models/mongoConnection';
 import Department from '@/models/mongoSchemas/departmentSchema';
-import { Box, Button } from '@chakra-ui/react';
+import { Box, Button, Center, Heading, Text, VStack } from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 
@@ -53,31 +53,46 @@ export default function Home({ user, departments }: HomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <h1>Selecciona un departamento</h1>
+      <Center h="100vh" bgColor="gray.100">
+        <Box w="sm" p={8} rounded="md" bgColor="white" boxShadow="lg">
+          <Box
+            textAlign={'center'}
+            h={'150px'}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
+            <img src="/logo.png" alt="Logo UAL" style={{ height: '100%' }} />
+          </Box>
+          <VStack spacing={6} align="stretch">
+            <Box textAlign={'center'} pt={2}>
+              <Heading size="md">
+                ¿A que departamento deseas tomar turno?
+              </Heading>
+            </Box>
 
-        <Box>
-          {departments == '404' ? (
-            <>
-              <p>No hay departamentos</p>
-            </>
-          ) : (
-            <>
-              {departments.map((department: any) => (
-                <Box key={department._id}>
-                  <Button
-                    onClick={() => {
-                      router.push(`/take-turn/${department.name}`);
-                    }}
-                  >
-                    {department.name}
-                  </Button>
-                </Box>
-              ))}
-            </>
-          )}
+            {departments == '404' ? (
+              <Box>
+                <Text textAlign={'center'} color={'red'}>
+                  No hay departamentos disponibles :(
+                </Text>
+              </Box>
+            ) : (
+              departments.map((department: any) => (
+                <Button
+                  key={department._id}
+                  colorScheme="teal"
+                  onClick={() => {
+                    router.push(`/take-turn/${department.name}`);
+                  }}
+                >
+                  {department.name}
+                </Button>
+              ))
+            )}
+          </VStack>
         </Box>
-      </main>
+      </Center>
     </>
   );
 }
