@@ -325,6 +325,7 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
                 {departments.map((department: any) => {
                   return (
                     <DepartmentAccordeonItem
+                      key={department._id}
                       department={department}
                       reloadDepartments={getDepartments}
                       validateUser={validateUser}

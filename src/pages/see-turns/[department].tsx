@@ -2,7 +2,7 @@ import LoaderSpinner from '@/components/loaderSpinner';
 import ServicePointTurnBox from '@/components/servicePointTurnBox';
 import connectDB from '@/models/mongoConnection';
 import Department from '@/models/mongoSchemas/departmentSchema';
-import { Box, useToast } from '@chakra-ui/react';
+import { Box, Flex, Text, useToast } from '@chakra-ui/react';
 import { GetServerSidePropsContext } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -118,53 +118,58 @@ export default function TakeTurn({ department }: TakeTurnProps) {
       </Head>
 
       <main>
-        {department.name}
+        <Flex
+          as="header"
+          justifyContent="center"
+          alignItems="center"
+          p={5}
+          borderBottom="1px"
+          borderColor="gray.200"
+        >
+          <Text fontWeight="bold" fontSize="xl">
+            {department.name}
+          </Text>
+        </Flex>
 
-        <Box>
-          {queue == null ? (
-            <>
+        <Flex mt={5} direction="row">
+          {/* Queue */}
+          <Box flex={1} p={5} boxShadow="sm" borderRadius="md" mr={2}>
+            <h2>Queue</h2>
+            {queue == null ? (
               <LoaderSpinner size="xl" paddingY="2rem" />
-            </>
-          ) : queue == '404' ? (
-            <>No hay fila</>
-          ) : (
-            <>
-              {queue.map((turn: any, i: any) => {
-                return (
-                  <Box key={turn._id}>
-                    {i == 0 ? 'Siguiente: ' : null}
-                    {turn.turn}
-                  </Box>
-                );
-              })}
-            </>
-          )}
-        </Box>
+            ) : queue == '404' ? (
+              <Box>No hay fila</Box>
+            ) : (
+              queue.map((turn: any, i: any) => (
+                <Box key={turn._id}>
+                  {i == 0 ? 'Siguiente: ' : null}
+                  {turn.turn}
+                </Box>
+              ))
+            )}
+          </Box>
 
-        <Box>
-          {servicePoints == null ? (
-            <>Cargando...</>
-          ) : servicePoints == '400' ? (
-            <>No se han creado puntos de servicio para este departamento</>
-          ) : (
-            <>
-              {servicePoints.map((servicePoint: any) => {
-                return (
-                  <>
-                    {servicePoint.available ? (
-                      <>
-                        <ServicePointTurnBox
-                          key={servicePoint._id}
-                          servicePointId={servicePoint._id}
-                        />
-                      </>
-                    ) : null}
-                  </>
-                );
-              })}
-            </>
-          )}
-        </Box>
+          {/* Service Points */}
+          <Box flex={1} p={5} boxShadow="sm" borderRadius="md" ml={2}>
+            <h2>Service Points</h2>
+            {servicePoints == null ? (
+              <Box>Cargando...</Box>
+            ) : servicePoints == '400' ? (
+              <Box>
+                No se han creado puntos de servicio para este departamento
+              </Box>
+            ) : (
+              servicePoints.map((servicePoint: any) =>
+                servicePoint.available ? (
+                  <ServicePointTurnBox
+                    key={servicePoint._id}
+                    servicePointId={servicePoint._id}
+                  />
+                ) : null
+              )
+            )}
+          </Box>
+        </Flex>
       </main>
     </>
   );

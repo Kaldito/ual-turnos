@@ -1,6 +1,14 @@
 import Navbar from '@/components/layout/navbar';
 import { withSessionSsr } from '@/lib/auth/witSession';
-import { Box, Button, Spinner, useToast } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Divider,
+  Flex,
+  VStack,
+  useToast,
+} from '@chakra-ui/react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -328,107 +336,77 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
       <main>
         <Navbar rol={user.rol} name={user.username} />
 
-        {myServicePoint == null ? (
-          <>Cargando...</>
-        ) : myServicePoint == 'no asignado' ? (
-          <>
-            No le ha sido asignado un punto de servicio, comuniquese con un
-            administrador
-          </>
-        ) : myServicePoint == 'no disponible' ? (
-          <>
-            Su punto de servicio esta inhabilitado, comuniquese con un
-            administrador
-          </>
-        ) : (
-          <>
-            Gestionar mi punto de servicio {myServicePoint.name}
-            <Box>
-              {myTurn == null ? (
-                <>Cargando...</>
-              ) : myTurn == '404' ? (
-                <>No has tomado un turno</>
-              ) : (
-                <>{`Atendiendo turno: ${myTurn.turn}`}</>
-              )}
+        <VStack height="calc(100vh - 60px)" spacing={6}>
+          <Center flexGrow={1}>
+            <Box fontSize="2xl" fontWeight="bold">
+              Gestionar mi punto de servicio{' '}
+              {myServicePoint && myServicePoint.name}
             </Box>
-            <Box>
-              Fila de turnos:{' '}
+          </Center>
+          <Flex flexGrow={3} width="100%" justify="space-around">
+            <Box
+              flex="1"
+              textAlign="center"
+              p={5}
+              border="1px"
+              borderColor="gray.200"
+              borderRadius="md"
+            >
+              {myTurn == null
+                ? 'Cargando...'
+                : myTurn == '404'
+                ? 'No has tomado un turno'
+                : `Atendiendo turno: ${myTurn.turn}`}
+            </Box>
+
+            <Divider orientation="vertical" />
+
+            <Box
+              flex="1"
+              textAlign="center"
+              p={5}
+              border="1px"
+              borderColor="gray.200"
+              borderRadius="md"
+            >
+              Fila de turnos:
               <Box>
-                {queue == null ? (
-                  <>Cargando...</>
-                ) : queue == '404' ? (
-                  <>No hay turnos en la fila</>
-                ) : (
-                  <>
-                    {queue.map((turn: any) => {
-                      return (
-                        <>
-                          <Box>
-                            {turn.status == 'pending' ? (
-                              <>{turn.turn}</>
-                            ) : (
-                              <></>
-                            )}
-                          </Box>
-                        </>
-                      );
+                {queue == null
+                  ? 'Cargando...'
+                  : queue == '404'
+                  ? 'No hay turnos en la fila'
+                  : queue.map((turn: any) => {
+                      return turn.status == 'pending' ? (
+                        <Box key={turn._id}>{turn.turn}</Box>
+                      ) : null;
                     })}
-                  </>
-                )}
               </Box>
             </Box>
-            {/* // ---------- ABRIR/CERRAR CAJA ---------- // */}
-            <Box>
-              {myServicePointStatus == null ? (
-                <></>
-              ) : myServicePointStatus == 'open' ? (
-                <>
-                  <Button
-                    colorScheme="red"
-                    onClick={() => {
-                      changeServicePointStatus('closed');
-                    }}
-                  >
-                    Cerrar Punto de Servicio
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button
-                    colorScheme="green"
-                    onClick={() => {
-                      changeServicePointStatus('open');
-                    }}
-                  >
-                    Abrir Punto de servicio
-                  </Button>
-                </>
-              )}
-            </Box>
-            <Box>
-              {myServicePointStatus == null ? (
-                <></>
-              ) : myServicePointStatus == 'open' ? (
-                <>
-                  {loadingButton ? (
-                    <>
-                      <Button>
-                        <Spinner size={'sm'} mx={5} />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button onClick={getATurn}>Atender Turno</Button>
-                    </>
-                  )}
-                </>
-              ) : (
-                <></>
-              )}
-            </Box>
-          </>
-        )}
+          </Flex>
+          <Flex width="100%" justify="space-around" paddingBottom={6}>
+            {myServicePointStatus == 'open' ? (
+              <Button
+                colorScheme="red"
+                onClick={() => changeServicePointStatus('closed')}
+              >
+                Cerrar Punto de Servicio
+              </Button>
+            ) : (
+              <Button
+                colorScheme="green"
+                onClick={() => changeServicePointStatus('open')}
+              >
+                Abrir Punto de servicio
+              </Button>
+            )}
+
+            {myServicePointStatus == 'open' && (
+              <Button isLoading={loadingButton} onClick={getATurn}>
+                Atender Turno
+              </Button>
+            )}
+          </Flex>
+        </VStack>
       </main>
     </>
   );

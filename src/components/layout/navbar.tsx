@@ -96,7 +96,7 @@ export default function NavBar({ rol, name }: NavBarProps) {
             onClick={() => {
               router.push('/system');
             }}
-            style={{ cursor: 'pointer', paddingTop: '6px' }}
+            style={{ cursor: 'pointer' }}
           >
             <Text
               textAlign={useBreakpointValue({ base: 'center', md: 'left' })}

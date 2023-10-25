@@ -66,30 +66,28 @@ const ServicePointTurnBox: React.FC<IServicePointTurnBoxProps> = ({
 
   return (
     <>
-      <Box>
+      <Box mt={5} p={3} boxShadow="sm" borderRadius="md">
         {servicePointData == null ? (
-          <>Cargando...</>
+          <Box>Cargando...</Box>
         ) : servicePointData == '404' ? (
-          <>Punto de servicio Inhabilitado...</>
+          <Box color="red.500">Punto de servicio Inhabilitado...</Box>
         ) : (
-          <>
-            <Box>
-              {servicePointData.name} {servicePointData.status}
-              {servicePointData.status == 'open' ? (
-                <>
-                  {servicePointTurn == null ? (
-                    <>Cargando...</>
-                  ) : servicePointTurn == '404' ? (
-                    <>Esperando...</>
-                  ) : (
-                    <>
-                      <Box>{servicePointTurn.turn}</Box>
-                    </>
-                  )}
-                </>
-              ) : null}
+          <Box>
+            <Box fontWeight="bold">
+              {servicePointData.name} ({servicePointData.status})
             </Box>
-          </>
+            {servicePointData.status == 'open' ? (
+              <>
+                {servicePointTurn == null ? (
+                  <Box>Cargando...</Box>
+                ) : servicePointTurn == '404' ? (
+                  <Box>Esperando...</Box>
+                ) : (
+                  <Box>{servicePointTurn.turn}</Box>
+                )}
+              </>
+            ) : null}
+          </Box>
         )}
       </Box>
     </>

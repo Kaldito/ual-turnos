@@ -14,10 +14,11 @@ export default withSessionRoute(createSessionRoute);
 
 async function createSessionRoute(req: any, res: NextApiResponse) {
   // - Conectamos a la base de datos
-  await connectDB();
 
   // - Si el método de la petición es POST, se procede a validar los datos
   if (req.method === 'POST') {
+    await connectDB();
+
     let response = null;
 
     // - Se busca el usuario en la base de datos
@@ -47,9 +48,9 @@ async function createSessionRoute(req: any, res: NextApiResponse) {
       await req.session.save();
 
       res.send({ ok: true });
+    } else {
+      return res.status(403).send('');
     }
-
-    return res.status(403).send('');
   }
   return res.status(404).send('');
 }
