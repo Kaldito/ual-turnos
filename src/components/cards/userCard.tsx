@@ -117,7 +117,7 @@ export default function UserCard({
     }
 
     // - Validar que el usuario o el correo no esten en blanco
-    if (username == '' || email == '') {
+    if (username.trim() == '' || email.trim() == '') {
       toast({
         title: 'Error al actualizar usuario',
         description:
@@ -146,7 +146,7 @@ export default function UserCard({
     }
 
     // - Validar que la contra no se sea menor a ocho si es que se va a cambiar
-    if (password != '' && password.length < 8) {
+    if (password.trim() != '' && password.length < 8) {
       toast({
         title: 'Error al actualizar usuario',
         description: 'La nueva contraseña debe tener al menos 8 caracteres.',

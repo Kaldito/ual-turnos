@@ -1,4 +1,5 @@
-import { Box, Center, useToast } from '@chakra-ui/react';
+import { CloseIcon } from '@chakra-ui/icons';
+import { Box, Center, Flex, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 export interface IServicePointTurnBoxProps {
@@ -77,7 +78,30 @@ const ServicePointTurnBox: React.FC<IServicePointTurnBoxProps> = ({
         {servicePointData == null ? (
           <Box>Cargando...</Box>
         ) : servicePointData == '404' ? (
-          <Box color="red.500">Punto de servicio Inhabilitado...</Box>
+          <Box
+            color="black"
+            h={'100%'}
+            fontWeight={'bold'}
+            fontSize={'2xl'}
+            bgColor={'red.100'}
+          >
+            <Center h={'100%'}>
+              <Box display="inline-block">
+                <Flex
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  bg={'red.500'}
+                  rounded={'50px'}
+                  w={'55px'}
+                  h={'55px'}
+                  textAlign="center"
+                >
+                  <CloseIcon boxSize={'20px'} color={'white'} />
+                </Flex>
+              </Box>
+            </Center>
+          </Box>
         ) : (
           <Box h={'100%'}>
             <Box

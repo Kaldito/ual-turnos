@@ -53,7 +53,12 @@ export default function NewUserCard({
     }
 
     // - Validar campos obligatorios
-    if (username == '' || email == '' || password == '' || rol == '') {
+    if (
+      username.trim() == '' ||
+      email.trim() == '' ||
+      password.trim() == '' ||
+      rol.trim() == ''
+    ) {
       toast({
         title: 'Error al generar usuario',
         variant: 'left-accent',
@@ -79,7 +84,7 @@ export default function NewUserCard({
     }
 
     // - Validar contraseña de al menos 8 caracteres
-    if (password.length < 8) {
+    if (password.trim().length < 8) {
       toast({
         title: 'Error al generar usuario',
         variant: 'left-accent',
@@ -292,9 +297,9 @@ export default function NewUserCard({
             {/* // - ROL - // */}
             <Box mt={3}>
               <Select
-                title="Selecciona tu Rol..."
+                title="Selecciona un rol..."
                 size="sm"
-                value={rol}
+                value={userRol == 'superadmin' ? rol : 'asesor'}
                 onChange={(e) => setRol(e.target.value)}
               >
                 <option value="">Selecciona un rol...</option>

@@ -23,7 +23,7 @@ async function createSessionRoute(req: any, res: NextApiResponse) {
 
     // - Se busca el usuario en la base de datos
     const user = await User.findOne({
-      correo: req.body.mail,
+      correo: req.body.mail.toLowerCase(),
     });
 
     if (user.status == 'inactive') return res.status(401).send('');

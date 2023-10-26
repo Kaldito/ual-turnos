@@ -110,7 +110,7 @@ const DeactivateDepartmentModal: React.FC<
           {/* // - BODY - // */}
           <ModalBody>
             <span style={{ fontWeight: 'bold' }}>{servicePoint_data.name}</span>{' '}
-            se desactivara, lo cual implica que no se podran asignar turnos a
+            se desactivará, lo cual implica que no se podrán asignar turnos a
             este punto de servicio hasta que se reactive.
           </ModalBody>
 

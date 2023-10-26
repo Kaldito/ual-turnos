@@ -130,12 +130,12 @@ const NewServicePointModal: React.FC<INewServicePointModalProps> = ({
 
             <Text fontSize={'0.9rem'}>
               El <span style={{ fontWeight: 'bold' }}>Punto de Servicio</span>{' '}
-              creado se tendra que asignar a todos los asesores para los que se
-              desee que este disponible desde la pagina de gestion usuarios.
+              creado se tendrá que asignar a todos los asesores para los que se
+              desee que esté disponible desde la página de gestión usuarios.
             </Text>
 
             <Text mt={2} fontSize={'0.9rem'} color={'red'} fontWeight={'bold'}>
-              Solo puede haber un maximo de 6 puntos de servicio por
+              Solo puede haber un máximo de 6 puntos de servicio por
               departamento.
             </Text>
 

@@ -76,13 +76,13 @@ const DeactivateUserModal: React.FC<IDeactivateUserModalProps> = ({
 
           <ModalBody>
             El usuario <span style={{ fontWeight: 'bold' }}>{username}</span> se
-            desactivara, lo cual cerrara la sesion de este usuario y no podra
-            volverla a iniciar hasta que se vuelva a activar.
+            desactivará, lo cual cerrara la sesión de este usuario y no podrá
+            volverla a iniciar hasta que se vuelva a activar
           </ModalBody>
 
           <ModalFooter>
             <Button variant="ghost" mr={3} onClick={onClose}>
-              Close
+              Cancelar
             </Button>
 
             <Button

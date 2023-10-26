@@ -53,7 +53,7 @@ export default function Home({ user, departments }: HomeProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Center h="100vh" bgColor="gray.100">
+      <Center minH="100vh" bgColor="gray.100">
         <Box w="sm" p={8} rounded="md" bgColor="white" boxShadow="lg">
           <Box
             textAlign={'center'}

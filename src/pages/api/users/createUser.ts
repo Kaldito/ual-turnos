@@ -21,7 +21,7 @@ export default async function handler(
     const { username, email, password, rol, servicePoint } = req.body;
 
     // - Validando que no se haya registrado el mismo correo o contraseña
-    const validateMail = await User.findOne({ correo: email });
+    const validateMail = await User.findOne({ correo: email.toLowerCase() });
     const validateUsername = await User.findOne({ username: username });
 
     if (validateMail || validateUsername) {
@@ -34,7 +34,7 @@ export default async function handler(
     bcrypt.hash(password, 10, async function (err, hash) {
       const userObject: any = {
         username: username,
-        correo: email,
+        correo: email.toLowerCase(),
         password: hash,
         rol: rol,
         status: 'active',

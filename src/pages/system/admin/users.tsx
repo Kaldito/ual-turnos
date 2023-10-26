@@ -153,7 +153,7 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
             <Flex h={'100%'}>
               <Center>
                 <Heading as={'h1'} fontSize={'25px'} fontWeight={'bold'} pl={6}>
-                  Gestion de Usuarios
+                  Gestión de Usuarios
                 </Heading>
               </Center>
             </Flex>
@@ -205,15 +205,19 @@ export default function UsersPage({ user, servicePoints }: UsersPageProps) {
                 {/* CARDS PARA VER USUARIOS */}
                 {users.map((user: any) => {
                   return (
-                    <GridItem key={user._id}>
-                      <UserCard
-                        myRol={myUser?.rol}
-                        user={user}
-                        servicePoints={servicePoints}
-                        reloadUsers={getUsers}
-                        validateUser={validateUser}
-                      />
-                    </GridItem>
+                    <>
+                      {myUser?.rol == 'admin' && user.rol == 'admin' ? null : (
+                        <GridItem key={user._id}>
+                          <UserCard
+                            myRol={myUser?.rol}
+                            user={user}
+                            servicePoints={servicePoints}
+                            reloadUsers={getUsers}
+                            validateUser={validateUser}
+                          />
+                        </GridItem>
+                      )}
+                    </>
                   );
                 })}
               </>

@@ -108,7 +108,7 @@ const DeactivateDepartmentModal: React.FC<IDeactivateDepartmentModalProps> = ({
           <ModalBody>
             El departamento{' '}
             <span style={{ fontWeight: 'bold' }}>{department_data.name}</span>{' '}
-            se desactivara, lo cual implica que no se podran generar turnos para
+            se desactivará, lo cual implica que no se podrán generar turnos para
             este departamento hasta que se reactive.
           </ModalBody>
 

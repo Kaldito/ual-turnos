@@ -229,7 +229,7 @@ export default function DepartmentsPage({ user }: DepartmentsPageProps) {
             <Flex h={'100%'}>
               <Center>
                 <Heading as={'h1'} fontSize={'25px'} fontWeight={'bold'} pl={6}>
-                  Gestion de Departamentos
+                  Gestión de Departamentos
                 </Heading>
               </Center>
 
