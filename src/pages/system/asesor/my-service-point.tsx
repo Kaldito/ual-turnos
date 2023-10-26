@@ -1,11 +1,15 @@
 import Navbar from '@/components/layout/navbar';
 import { withSessionSsr } from '@/lib/auth/witSession';
+import { CloseIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
   Center,
   Divider,
   Flex,
+  Heading,
+  Stack,
+  Text,
   VStack,
   useToast,
 } from '@chakra-ui/react';
@@ -336,57 +340,164 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
       <main>
         <Navbar rol={user.rol} name={user.username} />
 
-        <VStack height="calc(100vh - 60px)" spacing={6}>
+        <VStack height="calc(100vh - 60px)" spacing={1} paddingX={8}>
           <Center flexGrow={1}>
-            <Box fontSize="2xl" fontWeight="bold">
-              Gestionar mi punto de servicio{' '}
+            <Heading size="lg" fontWeight={'bold'}>
               {myServicePoint && myServicePoint.name}
-            </Box>
+            </Heading>
           </Center>
-          <Flex flexGrow={3} width="100%" justify="space-around">
+
+          <Stack
+            direction={['column', 'row']}
+            flexGrow={3}
+            width="100%"
+            spacing={4}
+            divider={<Divider orientation="vertical" />}
+          >
             <Box
               flex="1"
               textAlign="center"
               p={5}
               border="1px"
+              boxShadow={'xl'}
               borderColor="gray.200"
               borderRadius="md"
+              h={'100%'}
             >
-              {myTurn == null
-                ? 'Cargando...'
-                : myTurn == '404'
-                ? 'No has tomado un turno'
-                : `Atendiendo turno: ${myTurn.turn}`}
+              {myTurn == null ? (
+                'Cargando...'
+              ) : myTurn == '404' ? (
+                <Center w={'100%'} h={'100%'}>
+                  <Box textAlign="center" py={10} px={6} w={'100%'}>
+                    <Box display="inline-block">
+                      <Flex
+                        flexDirection="column"
+                        justifyContent="center"
+                        alignItems="center"
+                        bg={'red.500'}
+                        rounded={'50px'}
+                        w={'55px'}
+                        h={'55px'}
+                        textAlign="center"
+                      >
+                        <CloseIcon boxSize={'20px'} color={'white'} />
+                      </Flex>
+                    </Box>
+                    <Heading as="h2" size="xl" mt={6} mb={2}>
+                      No esta atendiendo un turno actualmente...
+                    </Heading>
+                  </Box>
+                </Center>
+              ) : (
+                <Center w={'100%'} h={'100%'}>
+                  <Box textAlign="center" w={'100%'}>
+                    <Heading as="h2" size="xl" mb={2}>
+                      Atendiendo Turno: {myTurn.turn}
+                    </Heading>
+                    <Text color={'gray.500'}>
+                      ID del turno: {myTurn._id.slice(myTurn._id.length - 5)}
+                    </Text>
+                  </Box>
+                </Center>
+              )}
             </Box>
 
-            <Divider orientation="vertical" />
-
             <Box
               flex="1"
               textAlign="center"
               p={5}
               border="1px"
+              boxShadow={'xl'}
               borderColor="gray.200"
               borderRadius="md"
+              h={'100%'}
+              overflow={'hidden'}
             >
-              Fila de turnos:
-              <Box>
-                {queue == null
-                  ? 'Cargando...'
-                  : queue == '404'
-                  ? 'No hay turnos en la fila'
-                  : queue.map((turn: any) => {
-                      return turn.status == 'pending' ? (
-                        <Box key={turn._id}>{turn.turn}</Box>
+              <Text fontSize="2xl" fontWeight="bold">
+                Fila de turnos
+              </Text>
+
+              <VStack mt={2} spacing={2} overflow={'hidden'}>
+                {queue == null ? (
+                  'Cargando...'
+                ) : queue == '404' ? (
+                  'No hay turnos en la fila'
+                ) : (
+                  <>
+                    {queue.map((turn: any, i: any) => {
+                      return turn.status == 'pending' && i < 7 ? (
+                        <Box
+                          key={turn._id}
+                          p={2}
+                          fontSize="xl"
+                          w={'25%'}
+                          boxShadow="xl"
+                          fontWeight={i == 0 ? 'bold' : 'medium'}
+                          bgColor={i == 0 ? 'green.100' : 'white'}
+                          borderRadius="lg"
+                          borderWidth={i == 0 ? '2px' : '1px'}
+                          borderColor={i == 0 ? 'green.500' : 'gray.300'}
+                          textAlign="center"
+                        >
+                          {turn.turn}
+                        </Box>
                       ) : null;
                     })}
-              </Box>
+
+                    {queue.length > 8 ? (
+                      <>
+                        <Box
+                          key={'more'}
+                          p={2}
+                          fontSize="xl"
+                          w={'25%'}
+                          boxShadow="xl"
+                          fontWeight={'medium'}
+                          bgColor={'white'}
+                          borderRadius="lg"
+                          borderWidth={'1px'}
+                          borderColor={'gray.300'}
+                          textAlign="center"
+                        >
+                          {queue.length - 7} mas...
+                        </Box>
+                      </>
+                    ) : queue.length == 8 ? (
+                      <>
+                        <Box
+                          key={queue[7]._id}
+                          p={2}
+                          fontSize="xl"
+                          w={'25%'}
+                          boxShadow="xl"
+                          fontWeight={'medium'}
+                          bgColor={'white'}
+                          borderRadius="lg"
+                          borderWidth={'1px'}
+                          borderColor={'gray.300'}
+                          textAlign="center"
+                        >
+                          {queue[7].turn}
+                        </Box>
+                      </>
+                    ) : null}
+                  </>
+                )}
+              </VStack>
             </Box>
-          </Flex>
-          <Flex width="100%" justify="space-around" paddingBottom={6}>
+          </Stack>
+
+          <Flex width="100%" justify="space-between" paddingY={6}>
+            {myServicePointStatus == 'open' && (
+              <Button isLoading={loadingButton} onClick={getATurn} size={'lg'}>
+                Atender Turno
+              </Button>
+            )}
+
             {myServicePointStatus == 'open' ? (
               <Button
                 colorScheme="red"
+                size={'lg'}
                 onClick={() => changeServicePointStatus('closed')}
               >
                 Cerrar Punto de Servicio
@@ -394,15 +505,11 @@ export default function AsesorServicePoint({ user }: AsesorServicePointProps) {
             ) : (
               <Button
                 colorScheme="green"
+                size={'lg'}
+                ml="auto"
                 onClick={() => changeServicePointStatus('open')}
               >
                 Abrir Punto de servicio
-              </Button>
-            )}
-
-            {myServicePointStatus == 'open' && (
-              <Button isLoading={loadingButton} onClick={getATurn}>
-                Atender Turno
               </Button>
             )}
           </Flex>

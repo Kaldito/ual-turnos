@@ -30,7 +30,7 @@ export default async function handler(
       department: department_id,
     });
 
-    if (validateDepartment.length == 8) {
+    if (validateDepartment.length == 6) {
       return res.status(400).json({
         message:
           'Ya se alcanzo el limite de puntos de servicio para este departamento',

@@ -1,4 +1,4 @@
-import { Box, useToast } from '@chakra-ui/react';
+import { Box, Center, useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
 export interface IServicePointTurnBoxProps {
@@ -66,27 +66,58 @@ const ServicePointTurnBox: React.FC<IServicePointTurnBoxProps> = ({
 
   return (
     <>
-      <Box mt={5} p={3} boxShadow="sm" borderRadius="md">
+      <Box
+        boxShadow={'2xl'}
+        borderRadius="md"
+        w={'full'}
+        h={'100%'}
+        bgColor={'white'}
+        overflow={'hidden'}
+      >
         {servicePointData == null ? (
           <Box>Cargando...</Box>
         ) : servicePointData == '404' ? (
           <Box color="red.500">Punto de servicio Inhabilitado...</Box>
         ) : (
-          <Box>
-            <Box fontWeight="bold">
-              {servicePointData.name} ({servicePointData.status})
+          <Box h={'100%'}>
+            <Box
+              fontWeight="bold"
+              p={6}
+              h={servicePointData.status == 'closed' ? '100%' : undefined}
+            >
+              <Center fontSize={'3xl'} h={'100%'}>
+                {servicePointData.name}{' '}
+                {servicePointData.status == 'closed' ? (
+                  <span style={{ color: 'red', marginLeft: '0.5rem' }}>
+                    (Cerrado)
+                  </span>
+                ) : null}
+              </Center>
             </Box>
+
             {servicePointData.status == 'open' ? (
               <>
                 {servicePointTurn == null ? (
                   <Box>Cargando...</Box>
                 ) : servicePointTurn == '404' ? (
-                  <Box>Esperando...</Box>
+                  <>
+                    <Center bgColor={'gray.50'} p={'2.5rem'}>
+                      <Box fontSize={'xl'} fontWeight={'bold'} color={'gray'}>
+                        Esperando...
+                      </Box>
+                    </Center>
+                  </>
                 ) : (
-                  <Box>{servicePointTurn.turn}</Box>
+                  <Center bgColor={'gray.50'} p={'2.5rem'}>
+                    <Box fontSize={'4xl'} fontWeight={'bold'} color={'black'}>
+                      Atendiendo turno: {servicePointTurn.turn}
+                    </Box>
+                  </Center>
                 )}
               </>
-            ) : null}
+            ) : (
+              <></>
+            )}
           </Box>
         )}
       </Box>

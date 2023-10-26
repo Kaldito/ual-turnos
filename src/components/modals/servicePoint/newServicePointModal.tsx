@@ -135,7 +135,7 @@ const NewServicePointModal: React.FC<INewServicePointModalProps> = ({
             </Text>
 
             <Text mt={2} fontSize={'0.9rem'} color={'red'} fontWeight={'bold'}>
-              Solo puede haber un maximo de 8 puntos de servicio por
+              Solo puede haber un maximo de 6 puntos de servicio por
               departamento.
             </Text>
 
